@@ -1,1 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SimuWeb - AI Website Builder</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background: linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+      min-height:100vh; display:flex; align-items:center; justify-content:center;
+    }
+    .container{max-width:1200px;width:100%;padding:20px;}
+    .auth-section,.dashboard{
+      background:rgba(255,255,255,0.95);border-radius:20px;padding:40px;
+      text-align:center;box-shadow:0 20px 40px rgba(0,0,0,0.1);
+      backdrop-filter:blur(10px);animation:fadeIn .8s ease-out;
+    }
+    @keyframes fadeIn{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+    .logo{font-size:2.5rem;font-weight:bold;background:linear-gradient(135deg,#667eea,#764ba2);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:20px;}
+    .subtitle{color:#666;font-size:1.1rem;margin-bottom:30px;}
+    .discord-btn{background:#5865f2;color:white;border:none;padding:15px 30px;border-radius:50px;
+      font-size:1.1rem;font-weight:600;cursor:pointer;transition:.3s;text-decoration:none;
+      display:inline-flex;align-items:center;gap:10px;box-shadow:0 4px 15px rgba(88,101,242,.3);}
+    .discord-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(88,101,242,.4);}
+    .discord-icon{width:24px;height:24px;}
+    .dashboard{display:none;grid-template-columns:1fr 2fr;gap:30px;margin-top:30px;}
+    .sidebar{background:rgba(255,255,255,.9);border-radius:15px;padding:25px;height:fit-content;}
+    .user-info{display:flex;align-items:center;gap:15px;padding-bottom:20px;border-bottom:2px solid #f0f0f0;margin-bottom:20px;}
+    .avatar{width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);background-size:cover;background-position:center;}
+    .username{font-weight:600;color:#333;}
+    .projects-list{display:flex;flex-direction:column;gap:10px;}
+    .project-item{padding:15px;background:#f8f9fa;border-radius:10px;cursor:pointer;transition:.3s;}
+    .project-item:hover{background:#e9ecef;transform:translateX(5px);}
+    .main-content{background:rgba(255,255,255,.9);border-radius:15px;padding:30px;}
+    .welcome-message{text-align:center;margin-bottom:30px;}
+    .welcome-title{font-size:2rem;color:#333;margin-bottom:10px;animation:fadeIn 1s;}
+    .welcome-subtitle{color:#666;font-size:1.1rem;}
+    .model-selector{margin-bottom:20px;}
+    .model-select{padding:10px 15px;border:2px solid #e9ecef;border-radius:10px;font-size:1rem;background:white;}
+    .prompt-input{width:100%;min-height:120px;padding:15px;border:2px solid #e9ecef;border-radius:10px;
+      font-size:1rem;resize:vertical;margin-bottom:20px;font-family:inherit;}
+    .generate-btn{background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;
+      padding:15px 40px;border-radius:50px;font-size:1.1rem;font-weight:600;cursor:pointer;
+      transition:.3s;width:100%;}
+    .generate-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(102,126,234,.3);}
+    .generating{display:none;text-align:center;color:#666;font-style:italic;}
+    .preview-section{margin-top:30px;display:none;}
+    .preview-frame{width:100%;height:400px;border:2px solid #e9ecef;border-radius:10px;background:white;}
+    .project-info{background:#f8f9fa;padding:15px;border-radius:10px;margin-bottom:20px;display:none;}
+    .project-url{font-family:monospace;color:#667eea;word-break:break-all;}
+    @media(max-width:768px){.dashboard{grid-template-columns:1fr}.auth-section{padding:30px 20px}.logo{font-size:2rem}}
+  </style>
+</head>
+<body>
+<div class="container">
+  <!-- AUTH -->
+  <div class="auth-section" id="authSection">
+    <div class="logo">SimuWeb</div>
+    <div class="subtitle">AI-Powered Website Builder</div>
+    <p style="margin-bottom:30px;color:#666;">Create amazing websites with AI - no coding required!</p>
+    <button class="discord-btn" onclick="connectDiscord()">
+      <svg class="discord-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.3698a19.7913..."/></svg>
+      Connect with Discord
+    </button>
+  </div>
 
+  <!-- DASHBOARD -->
+  <div class="dashboard" id="dashboard">
+    <div class="sidebar">
+      <div class="user-info">
+        <div class="avatar" id="userAvatar"></div>
+        <div class="username" id="userName">User</div>
+      </div>
+      <div class="projects-list" id="projectsList">
+        <div class="project-item" onclick="createNewProject()">+ New Project</div>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="welcome-message" id="welcomeMessage">
+        <div class="welcome-title">Welcome to SimuWeb!</div>
+        <div class="welcome-subtitle">Create your first website with AI</div>
+      </div>
+      <div class="create-section" id="createSection">
+        <div class="model-selector">
+          <select class="model-select" id="modelSelect">
+            <option value="qwen/qwen3-32b">Qwen 3 32B (Alibaba)</option>
+          </select>
+        </div>
+        <textarea class="prompt-input" id="promptInput" placeholder="Describe your website idea..."></textarea>
+        <button class="generate-btn" onclick="generateProject()">Generate with AI</button>
+        <div class="generating" id="generating">AI is crafting your site...</div>
+        <div class="project-info" id="projectInfo">
+          Project URL: <span class="project-url" id="projectUrl"></span>
+        </div>
+        <div class="preview-section" id="previewSection">
+          <iframe class="preview-frame" id="previewFrame"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const clientId = "1362097275811135669"; // put your discord app client id
+const redirectUri = window.location.origin; // must match OAuth2 settings
+let userData = null;
+let projects = {};
+let projectCounter = 1;
+
+function connectDiscord(){
+  const url = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=token&scope=identify`;
+  window.location.href = url;
+}
+
+// handle oauth2 callback
+window.onload = async ()=>{
+  if(window.location.hash.includes("access_token")){
+    const params = new URLSearchParams(window.location.hash.substring(1));
+    const token = params.get("access_token");
+    const res = await fetch("https://discord.com/api/users/@me",{headers:{Authorization:`Bearer ${token}`}});
+    userData = await res.json();
+    loginSuccess(userData);
+    window.history.replaceState({},document.title,redirectUri); // clean url
+  }
+};
+
+function loginSuccess(user){
+  document.getElementById("authSection").style.display="none";
+  document.getElementById("dashboard").style.display="grid";
+  document.getElementById("userName").innerText=user.username;
+  document.getElementById("userAvatar").style.backgroundImage=
+    `url(https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png)`;
+}
+
+function createNewProject(){
+  const id = "proj"+projectCounter++;
+  projects[id]={versions:[],current:0};
+  alert("New project created! Describe it below.");
+}
+
+function generateProject(){
+  const prompt = document.getElementById("promptInput").value.trim();
+  if(!prompt){alert("Enter a description first!");return;}
+  document.getElementById("generating").style.display="block";
+
+  setTimeout(()=>{
+    document.getElementById("generating").style.display="none";
+    const pid="proj"+(projectCounter-1);
+    if(!projects[pid]){createNewProject();}
+    const version=projects[pid].versions.length+1;
+    const code=`<!DOCTYPE html><html><head><title>${prompt}</title></head><body><h1>${prompt}</h1><p>Generated by SimuWeb AI</p></body></html>`;
+    projects[pid].versions.push(code);
+    projects[pid].current=version;
+    const url=`${window.location.origin}/@${userData.username}/${pid}/${version}`;
+    document.getElementById("projectInfo").style.display="block";
+    document.getElementById("projectUrl").innerText=url;
+    document.getElementById("previewSection").style.display="block";
+    document.getElementById("previewFrame").srcdoc=code;
+  },2000);
+}
+
+// shortcut F2 to focus input
+document.addEventListener("keydown",e=>{
+  if(e.key==="F2"){
+    document.getElementById("promptInput").focus();
+    e.preventDefault();
+  }
+});
+</script>
+</body>
+</html>
