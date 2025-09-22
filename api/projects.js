@@ -1,4 +1,3 @@
-// /api/projects.js
 const { kv } = require("@vercel/kv");
 
 module.exports = async function handler(req, res) {
@@ -7,6 +6,7 @@ module.exports = async function handler(req, res) {
     const userKey = url.searchParams.get("userKey");
     const projectId = url.searchParams.get("projectId");
     const version = url.searchParams.get("version");
+
     if (!userKey) return res.status(400).json({ error: "BadRequest", message: "Missing userKey" });
 
     if (projectId && version) {
@@ -14,7 +14,7 @@ module.exports = async function handler(req, res) {
       return res.status(200).json(data || null);
     }
 
-    if (!kv) return res.status(200).json([]); // works without persistence too
+    if (!kv) return res.status(200).json([]); // KV not configured yet
 
     const set = await kv.smembers(`projects:${userKey}`);
     const items = await Promise.all(
