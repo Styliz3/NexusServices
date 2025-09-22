@@ -1,76 +1,92 @@
-export default async function handler(req, res) {
+// /api/generate.js
+import { kv } from '@vercel/kv';
+
+export const config = { runtime: 'edge' };
+
+async function readJSON(req) {
+  const text = await req.text();
+  try { return JSON.parse(text || '{}'); } catch { return {}; }
+}
+
+export default async function handler(req) {
   try {
-    const body = req.method === "POST" ? (await readJson(req)) : {};
-    const { prompt, username, projectId, model } = body;
+    const { prompt, username, userId, projectId } = await readJSON(req);
 
-    if (!process.env.GROQ_API_KEY) {
-      return res.status(500).json({
-        error: "MissingConfig",
-        message: "Server misconfigured. Contact support (missing GROQ_API_KEY)."
-      });
-    }
     if (!prompt || !username || !projectId) {
-      return res.status(400).json({
-        error: "BadRequest",
-        message: "Missing fields. Provide prompt, username, and projectId."
-      });
+      return new Response(JSON.stringify({ error: 'BadRequest', message: 'Missing prompt/username/projectId' }), { status: 400 });
+    }
+    if (!process.env.GROQ_API_KEY) {
+      return new Response(JSON.stringify({ error: 'MissingConfig', message: 'Missing GROQ_API_KEY. Contact support.' }), { status: 500 });
     }
 
-    const groq = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
+    // Ask Groq to return a multi-file project (JSON manifest)
+    const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
       headers: {
-        "Authorization": `Bearer ${process.env.GROQ_API_KEY}`,
-        "Content-Type": "application/json"
+        'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: model || "qwen/qwen3-32b",
+        model: 'qwen/qwen3-32b',
+        temperature: 0.6,
         messages: [
           {
-            role: "system",
+            role: 'system',
             content:
-              "You are SimuWeb's generator. Return ONE complete HTML document (optionally with inline CSS/JS). Do NOT wrap in markdown or code fences. It must be runnable in an <iframe>."
+`You are SimuWeb's code generator. Return a JSON object only (no markdown), with:
+{
+  "entry": "index.html",
+  "files": [
+    {"name":"index.html","content":"<html>...</html>"},
+    {"name":"style.css","content":"..."},
+    {"name":"app.js","content":"..."}
+  ]
+}
+All HTML must be complete (doctype, head, body). References to CSS/JS must match files you return.`
           },
           {
-            role: "user",
-            content:
-              `Create a functional, bug-free website for: ${prompt}. Include HTML, CSS, and any inline JS needed.`
+            role: 'user',
+            content: `Create a small working website for: ${prompt}.`
           }
-        ],
-        temperature: 0.6,
-        max_tokens: 4096
+        ]
       })
     });
 
-    if (!groq.ok) {
-      const detail = await groq.text();
-      return res.status(groq.status).json({
-        error: "GroqError",
-        message: "Generation failed. Please try again. If this persists, contact support.",
-        detail
-      });
+    if (!resp.ok) {
+      const detail = await resp.text();
+      return new Response(JSON.stringify({ error: 'GroqError', message: 'Generation failed. Please try again. If this persists, contact support.', detail }), { status: resp.status });
     }
 
-    const data = await groq.json();
-    const code =
-      data?.choices?.[0]?.message?.content ||
-      "<!doctype html><title>SimuWeb</title><h1>Empty response</h1>";
+    const data = await resp.json();
+    // Parse JSON manifest from assistant content
+    let manifest;
+    try {
+      manifest = JSON.parse(data.choices?.[0]?.message?.content || '{}');
+    } catch {
+      // fallback: wrap raw content into one index.html file
+      manifest = { entry: 'index.html', files: [{ name: 'index.html', content: data.choices?.[0]?.message?.content || '<!doctype html><title>Empty</title>' }] };
+    }
 
-    // TODO: persist to DB here (username, projectId, version, code)
-    const version = 1; // or next version from DB
-    return res.status(200).json({ projectId, version, code });
+    // Save to KV (if available)
+    const versionKey = `project:${userId || username}:${projectId}:version`;
+    const nextVersion = (await kv?.get(versionKey)) ? (await kv.get(versionKey)) + 1 : 1;
+    if (kv) {
+      await kv.set(versionKey, nextVersion);
+      await kv.set(`project:${userId || username}:${projectId}:v${nextVersion}`, manifest);
+      await kv.sadd(`projects:${userId || username}`, JSON.stringify({ projectId, lastVersion: nextVersion }));
+    }
+
+    return new Response(JSON.stringify({
+      projectId,
+      version: nextVersion,
+      manifest
+    }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+
   } catch (err) {
-    return res.status(500).json({
-      error: "ServerError",
-      message:
-        "We couldn't generate your site. Please try again. If this continues, contact support.",
+    return new Response(JSON.stringify({
+      error: 'ServerError',
+      message: 'We could not generate your site. Please try again. If this keeps happening, contact support.',
       detail: String(err)
-    });
+    }), { status: 500 });
   }
-}
-
-async function readJson(req) {
-  const chunks = [];
-  for await (const c of req) chunks.push(c);
-  const txt = Buffer.concat(chunks).toString("utf8");
-  try { return JSON.parse(txt || "{}"); } catch { return {}; }
 }
