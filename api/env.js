@@ -1,5 +1,4 @@
-export default function handler(req, res) {
-  res.status(200).json({
-    discordClientId: process.env.DISCORD_CLIENT_ID || null
-  });
-}
+// /api/env.js
+module.exports = async function handler(req, res) {
+  res.status(200).json({ discordClientId: process.env.DISCORD_CLIENT_ID || null });
+};
