@@ -1,7 +1,6 @@
 {
   "name": "simuweb",
   "private": true,
-  "type": "module",
   "dependencies": {
     "@vercel/kv": "^1.0.1"
   }
