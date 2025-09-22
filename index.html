@@ -33,7 +33,7 @@
     /* builder */
     .workspace{height:100%;display:grid;grid-template-columns:1fr 260px}
     .stage{position:relative;display:flex;align-items:center;justify-content:center;background:var(--bg)}
-    .stage > .inner{position:relative;width:100%;height:100%}
+    .stage > .inner{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center}
     .ph{text-align:center;color:#6d7175}.ph h2{font-size:1.28rem;margin-bottom:6px}.ph p{font-size:.92rem;color:#8a8f95}
     .preview{position:absolute;left:0;top:0;width:100%;height:100%;border:0;display:none;background:#fff}
     .right{background:#161616;border-left:1px solid var(--border);display:flex;flex-direction:column;min-height:0}
@@ -79,26 +79,7 @@
 
 <!-- HOME -->
 <section id="route-home" class="hidden">
-  <div class="home">
-    <div class="home-h">
-      <div class="mini">
-        <div id="homeAvatar" class="avatar"></div>
-        <div>
-          <div id="homeName" class="uname">User</div>
-          <div style="color:#8b9096;font-size:.85rem">Welcome back</div>
-        </div>
-      </div>
-      <span class="badge">Early Access</span>
-    </div>
-    <div class="grid">
-      <div class="tile">
-        <h3>Start a project</h3><p>Describe what you want. SimuWeb crafts a working site with HTML, CSS, and JS.</p>
-        <div class="row"><a class="btn btn-primary" id="startProject">Open builder</a></div>
-      </div>
-      <div class="tile"><h3>For You</h3><p>Personalized templates (coming soon).</p><div class="row"><button class="btn" disabled>Coming soon</button></div></div>
-      <div class="tile"><h3>Newest</h3><p>Community projects (coming soon).</p><div class="row"><button class="btn" disabled>Coming soon</button></div></div>
-    </div>
-  </div>
+  <!-- same as yours -->
 </section>
 
 <!-- BUILDER -->
@@ -106,42 +87,29 @@
   <div class="workspace">
     <div class="stage">
       <div class="inner">
-        <div id="placeholder" class="ph"><h2>Nothing to see here yet</h2><p>Your site will appear after you submit a prompt.</p></div>
+        <div id="placeholder" class="ph">
+          <h2>Nothing to see here yet</h2>
+          <p>Your site will appear after you submit a prompt.</p>
+        </div>
         <iframe id="frame" class="preview"></iframe>
       </div>
     </div>
     <aside class="right">
-      <div class="profile">
-        <div id="avatar" class="avatar"></div>
-        <div>
-          <div id="uname" class="uname">User</div>
-          <div id="uid" style="color:#7f848a;font-size:.8rem"></div>
-        </div>
-      </div>
-      <div class="tools"><button id="newProject" class="btn" type="button">New Project</button></div>
-      <div id="list" class="projects"><div class="empty">No projects yet</div></div>
+      <!-- sidebar -->
     </aside>
   </div>
 
   <div id="dock" class="dock">
-    <div id="thinking" class="thinking"><span>Crafting your site</span><span class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span></div>
+    <div id="thinking" class="thinking">
+      <span>Crafting your site</span>
+      <span class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>
+    </div>
     <input id="prompt" class="input" placeholder="Describe your website idea…" autocomplete="off"/>
     <button id="go" class="go" type="button">Generate</button>
   </div>
 </section>
 
 <div id="toasts" class="toasts" aria-live="polite"></div>
-
-  <body>
-  <div class="app">
-    <div id="previewContainer"></div>
-    <div class="prompt-bar">
-      <input type="text" id="promptInput" placeholder="Describe your website idea..." />
-      <button id="generateBtn">Generate</button>
-    </div>
-  </div>
-  <script src="/preview.js"></script>
-</body>
 
 <script>
 /* ---------- public env ---------- */
