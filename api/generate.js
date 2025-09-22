@@ -1,4 +1,3 @@
-// /api/generate.js
 const { kv } = require("@vercel/kv");
 const fetch = global.fetch;
 
@@ -6,30 +5,23 @@ async function readBody(req) {
   return new Promise((resolve) => {
     let data = "";
     req.on("data", (c) => (data += c));
-    req.on("end", () => {
-      try { resolve(JSON.parse(data || "{}")); } catch { resolve({}); }
-    });
+    req.on("end", () => { try { resolve(JSON.parse(data || "{}")); } catch { resolve({}); } });
   });
 }
 
 function stripCodeFences(s = "") {
-  // Remove ```json / ```html / ``` fences if model emits them
-  return s.replace(/^```[\s\S]*?\n/, "").replace(/```$/,"").trim();
+  return s.replace(/^```[\s\S]*?\n/, "").replace(/```$/, "").trim();
 }
 
 module.exports = async function handler(req, res) {
   try {
-    if (req.method !== "POST") {
-      return res.status(405).json({ error: "MethodNotAllowed" });
-    }
+    if (req.method !== "POST") return res.status(405).json({ error: "MethodNotAllowed" });
 
     const { prompt, username, userId, projectId, model } = await readBody(req);
-    if (!prompt || !username || !projectId) {
+    if (!prompt || !username || !projectId)
       return res.status(400).json({ error: "BadRequest", message: "Missing prompt/username/projectId" });
-    }
-    if (!process.env.GROQ_API_KEY) {
+    if (!process.env.GROQ_API_KEY)
       return res.status(500).json({ error: "MissingConfig", message: "Missing GROQ_API_KEY. Contact support." });
-    }
 
     const groq = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
@@ -40,26 +32,17 @@ module.exports = async function handler(req, res) {
       body: JSON.stringify({
         model: model || "qwen/qwen3-32b",
         temperature: 0.6,
+        max_tokens: 4096,
         messages: [
           {
             role: "system",
             content:
-`Return ONLY JSON (no markdown) like:
-{
-  "entry":"index.html",
-  "files":[
-    {"name":"index.html","content":"<!doctype html>..."},
-    {"name":"style.css","content":"/* css */"},
-    {"name":"app.js","content":"// js"}
-  ]
-}
-- Do not add backticks or code fences.
-- Ensure <link> and <script src> paths match the "files" names.
-- HTML must be full HTML5 documents (doctype, head, body).`
+`Return ONLY JSON (no markdown):
+{"entry":"index.html","files":[{"name":"index.html","content":"<!doctype html>..."},{"name":"style.css","content":"..."},{"name":"app.js","content":"..."}]}
+Paths in <link>/<script src> must match file names.`
           },
           { role: "user", content: `Create a small working website for: ${prompt}.` }
-        ],
-        max_tokens: 4096
+        ]
       })
     });
 
@@ -73,21 +56,17 @@ module.exports = async function handler(req, res) {
     }
 
     const data = await groq.json();
-    let raw = data?.choices?.[0]?.message?.content || "";
-    raw = stripCodeFences(raw);
-
+    let raw = stripCodeFences(data?.choices?.[0]?.message?.content || "");
     let manifest;
-    try {
-      manifest = JSON.parse(raw);
-    } catch {
-      // If model returned plain HTML, wrap it as a single-file project.
+    try { manifest = JSON.parse(raw); }
+    catch {
       manifest = {
         entry: "index.html",
         files: [{ name: "index.html", content: raw || "<!doctype html><title>Empty</title>" }]
       };
     }
 
-    // Basic sanity: ensure doctype on HTML files
+    // ensure HTML doctype
     manifest.files = (manifest.files || []).map(f => {
       if (f.name.toLowerCase().endsWith(".html") && !/^<!doctype html>/i.test(f.content.trim())) {
         f.content = "<!doctype html>\n" + f.content;
@@ -95,7 +74,7 @@ module.exports = async function handler(req, res) {
       return f;
     });
 
-    // Persist to KV (if configured)
+    // persist
     const userKey = userId || username;
     let nextVersion = 1;
     if (kv) {
