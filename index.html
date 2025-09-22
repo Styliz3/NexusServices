@@ -10,6 +10,7 @@
     html,body{height:100%}
     body{background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;display:flex;flex-direction:column}
     .hidden{display:none!important}
+
     /* login card */
     .center{flex:1;display:flex;align-items:center;justify-content:center;padding:24px}
     .card{width:min(380px,92vw);background:#131313;border:1px solid var(--border);border-radius:16px;padding:28px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.45)}
@@ -18,8 +19,10 @@
     .discord-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:12px;background:var(--accent);color:#fff;border:0;cursor:pointer;padding:12px 14px;border-radius:10px;font-weight:700;font-size:1rem}
     .discord-logo{width:22px;height:22px;object-fit:contain}
     .badge{border:1px solid var(--border);padding:4px 10px;border-radius:999px;color:#c9cdd3;font-size:.84rem;display:inline-block;margin-top:14px}
-    /* router sections */
+
+    /* sections */
     #route-login,#route-home,#route-builder{min-height:100%}
+
     /* home */
     .home{max-width:1100px;margin:0 auto;padding:28px 20px}
     .home-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
@@ -28,14 +31,24 @@
     .uname{font-weight:700}
     .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
     .tile{background:#161616;border:1px solid var(--border);border-radius:14px;padding:18px;min-height:130px;display:flex;flex-direction:column;gap:10px}
-    .tile h3{font-size:1rem}.tile p{color:#a6abb0;font-size:.92rem}.tile .row{margin-top:auto;display:flex;gap:10px}
+    .tile h3{font-size:1rem}
+    .tile p{color:#a6abb0;font-size:.92rem}
+    .tile .row{margin-top:auto;display:flex;gap:10px}
     .btn{background:#1e1e1e;border:1px solid var(--border);color:#e9e9e9;padding:10px 12px;border-radius:10px;cursor:pointer;font-weight:700;font-size:.92rem}
-    .btn:hover{background:#232323}.btn-primary{background:#2b2b2b;border-color:#3a3a3a}.btn-primary:hover{background:#323232}
+    .btn:hover{background:#232323}
+    .btn-primary{background:#2b2b2b;border-color:#3a3a3a}
+    .btn-primary:hover{background:#323232}
+
     /* builder */
     .workspace{height:100%;display:grid;grid-template-columns:1fr 260px}
     .stage{position:relative;display:flex;align-items:center;justify-content:center;background:var(--bg)}
-    .ph{text-align:center;color:#6d7175}.ph h2{font-size:1.28rem;margin-bottom:6px}.ph p{font-size:.92rem;color:#8a8f95}
-    .preview{position:absolute;inset:0;border:0;display:none;background:#fff}
+    .stage > .inner{position:relative;width:100%;height:100%}
+    .ph{text-align:center;color:#6d7175}
+    .ph h2{font-size:1.28rem;margin-bottom:6px}
+    .ph p{font-size:.92rem;color:#8a8f95}
+    /* the iframe takes the whole stage */
+    .preview{position:absolute;left:0;top:0;width:100%;height:100%;border:0;display:none;background:#fff}
+
     .right{background:#161616;border-left:1px solid var(--border);display:flex;flex-direction:column;min-height:0}
     .profile{display:flex;align-items:center;gap:10px;padding:14px;border-bottom:1px solid var(--border)}
     .projects{flex:1;overflow:auto;padding:12px 10px 18px}
@@ -44,21 +57,29 @@
     .proj:hover{background:#1b1b1b;border-color:#3a3a3a}
     .pill{border:1px solid #3a3a3a;border-radius:999px;padding:2px 8px;color:#aab0b6;font-size:.78rem}
     .tools{display:flex;gap:8px;padding:10px 12px;border-bottom:1px solid var(--border)}
-    /* prompt */
+
+    /* prompt dock */
     .dock{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);width:min(780px,94vw);background:#131313;border:1px solid var(--border);border-radius:999px;display:none;align-items:center;gap:8px;padding:6px 8px;box-shadow:0 18px 60px rgba(0,0,0,.45)}
     .input{flex:1;background:transparent;border:0;outline:0;color:#f5f5f5;padding:12px 16px;font-size:1rem}
     .go{appearance:none;border:1px solid #3a3a3a;background:#242424;color:#fff;padding:10px 16px;border-radius:22px;font-weight:700;cursor:pointer}
     .go:hover{background:#2c2c2c;border-color:#4a4a4a}
     .thinking{display:none;align-items:center;gap:8px;margin-left:8px;color:#c7cad0;font-size:.9rem}
-    .dots{display:inline-flex;gap:2px}.dot{width:6px;height:6px;border-radius:50%;background:#c7cad0;opacity:.35;animation:blink 1.2s infinite ease-in-out}
+    .dots{display:inline-flex;gap:2px}
+    .dot{width:6px;height:6px;border-radius:50%;background:#c7cad0;opacity:.35;animation:blink 1.2s infinite ease-in-out}
     .dot:nth-child(2){animation-delay:.2s}.dot:nth-child(3){animation-delay:.4s}
     @keyframes blink{0%,80%,100%{opacity:.3;transform:translateY(0)}40%{opacity:1;transform:translateY(-2px)}}
+
     /* toasts */
     .toasts{position:fixed;right:18px;bottom:18px;display:flex;flex-direction:column;gap:10px;z-index:50}
     .toast{min-width:260px;max-width:min(420px,90vw);background:#161616;border:1px solid var(--border);border-left-width:3px;border-radius:12px;padding:12px 14px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
     .toast.ok{border-left-color:var(--ok)}.toast.err{border-left-color:var(--err)}
     .toast h4{margin:0 0 4px;font-size:.98rem}.toast p{margin:0;color:#c5c9cf;font-size:.92rem}
-    @media (max-width:980px){.workspace{grid-template-columns:1fr}.right{position:fixed;inset:auto 0 0 0;height:54vh;border-left:0;border-top:1px solid var(--border)}.projects{padding-bottom:24vh}}
+
+    @media (max-width:980px){
+      .workspace{grid-template-columns:1fr}
+      .right{position:fixed;inset:auto 0 0 0;height:54vh;border-left:0;border-top:1px solid var(--border)}
+      .projects{padding-bottom:24vh}
+    }
   </style>
 </head>
 <body>
@@ -94,18 +115,14 @@
       <div class="tile">
         <h3>Start a project</h3>
         <p>Describe what you want. SimuWeb crafts a working site with HTML, CSS, and JS.</p>
-        <div class="row">
-          <a class="btn btn-primary" id="startProject">Open builder</a>
-        </div>
+        <div class="row"><a class="btn btn-primary" id="startProject">Open builder</a></div>
       </div>
       <div class="tile">
-        <h3>For You</h3>
-        <p>Personalized templates (coming soon).</p>
+        <h3>For You</h3><p>Personalized templates (coming soon).</p>
         <div class="row"><button class="btn" disabled>Coming soon</button></div>
       </div>
       <div class="tile">
-        <h3>Newest</h3>
-        <p>Fresh community projects (coming soon).</p>
+        <h3>Newest</h3><p>Fresh community projects (coming soon).</p>
         <div class="row"><button class="btn" disabled>Coming soon</button></div>
       </div>
     </div>
@@ -116,11 +133,13 @@
 <section id="route-builder" class="hidden">
   <div class="workspace">
     <div class="stage">
-      <div id="placeholder" class="ph">
-        <h2>Nothing to see here yet</h2>
-        <p>Your site will appear after you submit a prompt.</p>
+      <div class="inner">
+        <div id="placeholder" class="ph">
+          <h2>Nothing to see here yet</h2>
+          <p>Your site will appear after you submit a prompt.</p>
+        </div>
+        <iframe id="frame" class="preview"></iframe>
       </div>
-      <iframe id="frame" class="preview"></iframe>
     </div>
     <aside class="right">
       <div class="profile">
@@ -142,165 +161,316 @@
       <span>Crafting your site</span>
       <span class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>
     </div>
-    <input id="prompt" class="input" placeholder="Describe your website idea…" autocomplete="off" />
+    <input id="prompt" class="input" placeholder="Describe your website idea…" autocomplete="off"/>
     <button id="go" class="go" type="button">Generate</button>
   </div>
 </section>
 
-<!-- toasts -->
 <div id="toasts" class="toasts" aria-live="polite"></div>
 
 <script>
-/* ---------- public env via /api/env ---------- */
+/* ---------------- Public env ---------------- */
 let DISCORD_CLIENT_ID = null;
 
-/* ---------- state ---------- */
+/* ---------------- State ---------------- */
 let user = null; // { id, username, avatar, userId }
-let projects = {}; // { [projectId]: [{version, code}] }
+let projects = {}; // { [projectId]: [{version, manifest}] }
 let currentProjectId = null;
 const MODEL = "qwen/qwen3-32b";
 const REDIRECT_URI = window.location.origin + window.location.pathname;
 
+/* ---------------- DOM utils ---------------- */
 const $ = id => document.getElementById(id);
-const login = $("route-login"), home = $("route-home"), builder = $("route-builder");
-const toastWrap = $("toasts");
-
-function show(el){el.classList.remove("hidden")}
-function hide(el){el.classList.add("hidden")}
+function show(el){ el.classList.remove('hidden'); }
+function hide(el){ el.classList.add('hidden'); }
 function toast(kind,title,msg){
-  const t=document.createElement("div"); t.className=`toast ${kind}`;
+  const t=document.createElement('div'); t.className=`toast ${kind}`;
   t.innerHTML=`<h4>${title}</h4><p>${msg||""}</p>`;
-  toastWrap.appendChild(t); setTimeout(()=>t.remove(),6000);
+  $('toasts').appendChild(t); setTimeout(()=>t.remove(),6000);
 }
 function uid(){return "u_"+Math.random().toString(36).slice(2)+Date.now().toString(36)}
 function sanitize(s){return (s||"").replace(/[^\w\-.]/g,"_")}
-function saveSession(u){ try{localStorage.setItem("simuweb:user",JSON.stringify(u));}catch{} }
-function loadSession(){ try{const r=localStorage.getItem("simuweb:user");return r?JSON.parse(r):null;}catch{return null;} }
+function saveSession(u){try{localStorage.setItem("simuweb:user",JSON.stringify(u));}catch{}}
+function loadSession(){try{const r=localStorage.getItem("simuweb:user");return r?JSON.parse(r):null;}catch{return null;}}
 function go(path){ history.pushState({}, "", path); renderRoute(); }
 
-function hydrateUserUI(){
-  const url = (user.id&&user.avatar)?`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`:"https://cdn.discordapp.com/embed/avatars/0.png";
-  $("homeAvatar").style.backgroundImage=`url(${url})`; $("homeName").textContent=user.username||"User";
-  $("avatar").style.backgroundImage=`url(${url})`; $("uname").textContent=user.username||"User"; $("uid").textContent=user.userId||"";
-}
+/* ---------------- Router ---------------- */
 function renderRoute(){
-  const p = window.location.pathname;
-  const isHome = p.endsWith("/home")||p==="/home";
+  const p = location.pathname;
+  const isHome = p.endsWith("/home") || p === "/home";
   const isBuilder = /\/@/.test(p) || p.endsWith("/builder");
-  hide(login);hide(home);hide(builder);
-  if(!user){show(login);return;}
-  if(isHome){show(home);return;}
-  if(isBuilder){show(builder);$("dock").style.display="flex";return;}
+  hide($('route-login')); hide($('route-home')); hide($('route-builder'));
+  if(!user){ show($('route-login')); return; }
+  if(isHome){ show($('route-home')); return; }
+  if(isBuilder){ show($('route-builder')); $('dock').style.display='flex'; return; }
   go("/home");
 }
 
-/* ---------- startup ---------- */
-(async function init(){
+/* ---------------- Auth ---------------- */
+async function initEnv(){
   try{
     const env = await fetch("/api/env").then(r=>r.json());
     DISCORD_CLIENT_ID = env.discordClientId;
-  }catch{
-    // still allow UI; user can’t login if env route fails
-  }
+  }catch{}
+}
 
-  // existing session?
+function hydrateUserUI(){
+  const url = (user.id && user.avatar)
+    ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`
+    : "https://cdn.discordapp.com/embed/avatars/0.png";
+  $('homeAvatar').style.backgroundImage=`url(${url})`;
+  $('homeName').textContent=user.username||'User';
+  $('avatar').style.backgroundImage=`url(${url})`;
+  $('uname').textContent=user.username||'User';
+  $('uid').textContent=user.userId||'';
+}
+
+async function bootstrap(){
+  await initEnv();
+
   const ses = loadSession();
-  if(ses){
-    user = ses; hydrateUserUI(); go("/home");
-  }else{
-    renderRoute();
-  }
+  if(ses){ user = ses; hydrateUserUI(); go("/home"); }
+  else { renderRoute(); }
 
-  // hook buttons
-  $("discordBtn").onclick = () => {
-    if(!DISCORD_CLIENT_ID){ toast("err","Missing config","Contact support: DISCORD_CLIENT_ID not available."); return; }
+  $('discordBtn').onclick = () => {
+    if(!DISCORD_CLIENT_ID){ toast('err','Missing config','Contact support: DISCORD_CLIENT_ID not available.'); return; }
     const url = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=identify`;
-    window.location.href = url;
+    location.href = url;
   };
 
-  $("startProject").onclick = ()=>{ go("/builder"); $("dock").style.display="flex"; createNewProject(); $("prompt").focus(); };
-  $("newProject").onclick = createNewProject;
+  $('startProject').onclick = ()=>{ go("/builder"); $('dock').style.display='flex'; createNewProject(); $('prompt').focus(); };
+  $('newProject').onclick = createNewProject;
+  $('prompt').addEventListener('keydown',e=>{ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); $('go').click(); } });
+  document.addEventListener('keydown',e=>{ if(e.key==='F2'){ e.preventDefault(); $('prompt').focus(); } });
 
-  $("prompt").addEventListener("keydown",(e)=>{ if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();$("go").click();} });
-  document.addEventListener("keydown",(e)=>{ if(e.key==="F2"){ e.preventDefault(); $("prompt").focus(); } });
-
-  // handle discord redirect
-  if(window.location.hash.includes("access_token")){
+  // OAuth return
+  if(location.hash.includes('access_token')){
     try{
-      const params=new URLSearchParams(window.location.hash.substring(1));
-      const token=params.get("access_token");
-      const r=await fetch("https://discord.com/api/users/@me",{headers:{Authorization:`Bearer ${token}`}});
-      if(!r.ok) throw new Error("Discord identify failed");
-      const d=await r.json();
-      user={ id:d.id, username:d.username, avatar:d.avatar, userId:uid() };
+      const params = new URLSearchParams(location.hash.substring(1));
+      const token = params.get('access_token');
+      const r = await fetch('https://discord.com/api/users/@me',{headers:{Authorization:`Bearer ${token}`}});
+      if(!r.ok) throw new Error('Discord identify failed');
+      const d = await r.json();
+      user = { id:d.id, username:d.username, avatar:d.avatar, userId:uid() };
       saveSession(user);
-      history.replaceState({},document.title,REDIRECT_URI);
-      hydrateUserUI(); go("/home"); toast("ok","Signed in","Welcome to SimuWeb!");
+      history.replaceState({}, document.title, REDIRECT_URI);
+      hydrateUserUI();
+      go('/home');
+      toast('ok','Signed in','Welcome to SimuWeb!');
     }catch(e){
-      toast("err","Sign-in failed","Please try again. If this persists, contact support."); console.error(e);
+      console.error(e);
+      toast('err','Sign-in failed','Try again. If this persists, contact support.');
+      renderRoute();
     }
   }
-})();
 
-/* ---------- builder ---------- */
+  // Deep-link loader
+  window.addEventListener('popstate', renderRoute);
+  await maybeLoadDeepLink();
+}
+
+window.onload = bootstrap;
+
+/* ---------------- Projects ---------------- */
 function createNewProject(){
-  currentProjectId="proj"+Date.now();
-  if(!projects[currentProjectId]) projects[currentProjectId]=[];
-  const uname=sanitize(user?.username||"guest");
-  history.replaceState({}, "", `${window.location.origin}/@${uname}/${currentProjectId}`);
-  renderList();
+  currentProjectId = "proj" + Date.now();
+  if(!projects[currentProjectId]) projects[currentProjectId] = [];
+  const uname = sanitize(user?.username || 'guest');
+  history.replaceState({}, "", `${location.origin}/@${uname}/${currentProjectId}`);
+  renderProjectIndex([]); // clear list until first version exists
 }
 
-$("go").onclick = async ()=>{
-  const text=$("prompt").value.trim(); if(!text) return;
-  if(!currentProjectId) createNewProject();
-  $("go").disabled=true; $("go").textContent="Crafting…"; $("thinking").style.display="flex";
-  try{
-    const res=await fetch("/api/generate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({prompt:text,username:user?.username||"guest",projectId:currentProjectId,model:MODEL})});
-    if(!res.ok){ const detail=await res.text(); throw new Error(detail||"Generation failed"); }
-    const data=await res.json(); // { projectId, version, code }
-    applyGen(data); toast("ok","Site ready","Preview updated.");
-  }catch(err){
-    console.warn(err);
-    toast("err","We hit a snag","We couldn't generate your site. Please try again. If this continues, contact support.");
-    // demo fallback
-    const v=(projects[currentProjectId]?.length||0)+1;
-    const code=`<!doctype html><html><head><meta charset="utf-8"><title>${text}</title><style>body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial;margin:0;display:grid;place-items:center;height:100vh}main{max-width:800px;padding:32px;border:1px solid #ddd;border-radius:14px}h1{margin:0 0 8px}p{margin:0;color:#444}</style></head><body><main><h1>${text}</h1><p>Generated by SimuWeb (demo fallback)</p></main></body></html>`;
-    applyGen({projectId:currentProjectId,version:v,code});
-  }finally{
-    $("go").disabled=false; $("go").textContent="Generate"; $("thinking").style.display="none";
-  }
-};
-
-function applyGen({projectId,version,code}){
-  if(!projects[projectId]) projects[projectId]=[];
-  projects[projectId].push({version,code});
-  const uname=sanitize(user?.username||"guest");
-  history.pushState({}, "", `${window.location.origin}/@${uname}/${projectId}/${version}`);
-  $("placeholder").classList.add("hidden");
-  const f=$("frame"); f.style.display="block"; f.srcdoc=code;
-  renderList();
-}
-
-function renderList(){
-  const root=$("list"); root.innerHTML="";
-  const keys=Object.keys(projects);
-  if(keys.length===0){ const e=document.createElement("div"); e.className="empty"; e.textContent="No projects yet"; root.appendChild(e); return; }
-  keys.forEach(pid=>{
-    const latest=projects[pid][projects[pid].length-1];
-    const el=document.createElement("div"); el.className="proj";
-    el.innerHTML=`<span>${pid}</span><span class="pill">v${latest.version}</span>`;
-    el.onclick=()=>{
-      const uname=sanitize(user?.username||"guest");
-      history.pushState({}, "", `${window.location.origin}/@${uname}/${pid}/${latest.version}`);
-      $("placeholder").classList.add("hidden"); const f=$("frame"); f.style.display="block"; f.srcdoc=latest.code; currentProjectId=pid;
+function renderProjectIndex(indexItems){
+  const root = $('list'); root.innerHTML = '';
+  if(!indexItems || !indexItems.length){ const e=document.createElement('div'); e.className='empty'; e.textContent='No projects yet'; root.appendChild(e); return; }
+  indexItems.forEach(p=>{
+    const el=document.createElement('div'); el.className='proj';
+    el.innerHTML=`<span>${p.projectId}</span><span class="pill">v${p.lastVersion}</span>`;
+    el.onclick = async () => {
+      const userKey = encodeURIComponent(user?.userId || user?.username);
+      const res = await fetch(`/api/projects?userKey=${userKey}&projectId=${encodeURIComponent(p.projectId)}&version=${encodeURIComponent(p.lastVersion)}`);
+      const manifest = await res.json();
+      await renderManifestToPreview(manifest);
+      const uname = sanitize(user?.username || 'guest');
+      history.pushState({}, "", `${location.origin}/@${uname}/${p.projectId}/${p.lastVersion}`);
+      currentProjectId = p.projectId;
     };
     root.appendChild(el);
   });
 }
 
-/* back/forward */
-window.addEventListener("popstate", renderRoute);
+/* Show file-writing progress */
+function showWriteProgress(files){
+  const root = $('list'); root.innerHTML = '';
+  (files||[]).forEach(f=>{
+    const row=document.createElement('div'); row.className='proj';
+    row.innerHTML=`<span>Writing ${f.name}</span><span class="pill">…</span>`;
+    root.appendChild(row);
+  });
+}
+
+/* ---------------- Bundle: manifest -> runnable HTML ----------------
+   - Inlines <link rel="stylesheet" href="..."> to <style>...</style>
+   - Inlines <script src="..."> to <script>...</script> (keeps type if present)
+   - Converts image file refs (png/jpg/svg/gif/webp) to Blob URLs
+--------------------------------------------------------------------*/
+async function bundleManifest(manifest){
+  // If API returned plain HTML, wrap into manifest
+  if(!manifest || !manifest.files){
+    return { html: String(manifest || '<!doctype html><title>Empty</title>') };
+  }
+
+  const filesMap = new Map();
+  for(const f of manifest.files){ filesMap.set(f.name, f.content); }
+
+  const entryName = manifest.entry || 'index.html';
+  let entryHtml = filesMap.get(entryName) || [...filesMap.entries()].find(([n])=>n.endsWith('.html'))?.[1] || '<!doctype html><title>Empty</title>';
+
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(entryHtml, 'text/html');
+
+  // Inline styles
+  doc.querySelectorAll('link[rel="stylesheet"][href]').forEach(link=>{
+    const href = link.getAttribute('href');
+    const content = filesMap.get(href);
+    if(content!=null){
+      const style = doc.createElement('style');
+      style.textContent = content;
+      link.replaceWith(style);
+    }
+  });
+
+  // Inline scripts
+  doc.querySelectorAll('script[src]').forEach(script=>{
+    const src = script.getAttribute('src');
+    const content = filesMap.get(src);
+    if(content!=null){
+      const s = doc.createElement('script');
+      const type = script.getAttribute('type');
+      if(type) s.setAttribute('type', type);
+      s.textContent = content;
+      script.replaceWith(s);
+    }
+  });
+
+  // Images -> Blob URLs if present in files
+  const blobUrls = [];
+  function toMime(name){
+    const ext = name.split('.').pop().toLowerCase();
+    return ({
+      png:'image/png', jpg:'image/jpeg', jpeg:'image/jpeg', gif:'image/gif',
+      svg:'image/svg+xml', webp:'image/webp'
+    })[ext] || 'application/octet-stream';
+  }
+  doc.querySelectorAll('img[src]').forEach(img=>{
+    const src = img.getAttribute('src');
+    if(filesMap.has(src)){
+      const mime = toMime(src);
+      const blob = new Blob([filesMap.get(src)], { type: mime });
+      const url = URL.createObjectURL(blob);
+      blobUrls.push(url);
+      img.setAttribute('src', url);
+    }
+  });
+
+  const html = '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
+  // Note: blobUrls will auto-revoke when page is closed; no extra cleanup needed here
+  return { html };
+}
+
+/* Render manifest in the full-size iframe */
+async function renderManifestToPreview(manifest){
+  const { html } = await bundleManifest(manifest);
+  $('placeholder').classList.add('hidden');
+  const frame = $('frame');
+  frame.style.display='block';
+  frame.srcdoc = html;
+}
+
+/* ---------------- Generate ---------------- */
+$('go').onclick = async ()=>{
+  const text = $('prompt').value.trim();
+  if(!text) return;
+  if(!currentProjectId) createNewProject();
+
+  $('go').disabled=true; $('go').textContent='Crafting…'; $('thinking').style.display='flex';
+
+  try{
+    const res = await fetch('/api/generate', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        prompt:text,
+        username:user?.username || 'guest',
+        userId:user?.userId || user?.username,
+        projectId:currentProjectId,
+        model:MODEL
+      })
+    });
+
+    if(!res.ok){
+      const detail = await res.text();
+      throw new Error(detail || 'Generation failed');
+    }
+
+    const data = await res.json(); // { projectId, version, manifest }
+    showWriteProgress(data.manifest?.files || []);
+    await new Promise(r=>setTimeout(r, 350));
+    await renderManifestToPreview(data.manifest);
+
+    // Update URL and index list (KV)
+    const uname = sanitize(user?.username || 'guest');
+    history.pushState({}, "", `${location.origin}/@${uname}/${data.projectId}/${data.version}`);
+
+    // refresh sidebar index from KV (if available)
+    try{
+      const idx = await fetch(`/api/projects?userKey=${encodeURIComponent(user?.userId || user?.username)}`).then(r=>r.json());
+      renderProjectIndex(idx);
+    }catch{
+      // fallback local index
+      projects[currentProjectId] = projects[currentProjectId] || [];
+      projects[currentProjectId].push({ version:data.version, manifest:data.manifest });
+      renderProjectIndex(Object.keys(projects).map(pid=>({projectId:pid,lastVersion:projects[pid].length})));
+    }
+
+    toast('ok','Site ready','Preview updated.');
+  }catch(err){
+    console.warn(err);
+    toast('err','We hit a snag','Please try again. If this continues, contact support.');
+
+    // demo fallback: simple single-file html
+    const simple = `<!doctype html><html><head><meta charset="utf-8"><title>${text}</title>
+      <style>html,body{height:100%}body{margin:0;display:grid;place-items:center;font:16px system-ui}</style></head>
+      <body><main><h1>${text}</h1><p>Generated by SimuWeb (demo fallback)</p></main></body></html>`;
+    await renderManifestToPreview({ entry:'index.html', files:[{name:'index.html',content:simple}] });
+  }finally{
+    $('go').disabled=false; $('go').textContent='Generate'; $('thinking').style.display='none';
+  }
+};
+
+/* ---------------- Deep link loader ---------------- */
+async function maybeLoadDeepLink(){
+  // /@username/projectId/version
+  const parts = location.pathname.split('/').filter(Boolean);
+  if(parts[0]?.startsWith('@') && parts.length >= 3){
+    const usernameInUrl = parts[0].slice(1);
+    const pid = parts[1];
+    const ver = parts[2];
+    // if not logged in yet, render login; once they sign in we’ll load again
+    if(!user){ return; }
+    try{
+      const res = await fetch(`/api/projects?userKey=${encodeURIComponent(user?.userId || usernameInUrl)}&projectId=${encodeURIComponent(pid)}&version=${encodeURIComponent(ver)}`);
+      if(res.ok){
+        const manifest = await res.json();
+        if(manifest?.files?.length){
+          currentProjectId = pid;
+          await renderManifestToPreview(manifest);
+          show($('route-builder')); $('dock').style.display='flex';
+        }
+      }
+    }catch{}
+  }
+}
 </script>
 </body>
 </html>
