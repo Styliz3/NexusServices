@@ -1,67 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>SimuWeb - AI Website Builder</title>
   <style>
-    * { margin:0; padding:0; box-sizing:border-box; }
+    * {margin:0;padding:0;box-sizing:border-box;}
     body {
-      font-family: "Inter", sans-serif;
-      background:#000;
-      color:#fff;
+      background:#000; color:#fff;
+      font-family:"Inter",sans-serif;
       height:100vh; display:flex; flex-direction:column;
     }
 
-    /* Centered layout for signup */
-    .centered {
-      display:flex; align-items:center; justify-content:center;
-      flex:1; flex-direction:column; gap:20px;
-    }
+    .centered { display:flex; flex:1; justify-content:center; align-items:center; }
 
     .card {
       background:#111; border:1px solid #333;
-      padding:30px; border-radius:12px;
-      text-align:center; width:300px;
+      padding:30px; border-radius:12px; text-align:center;
+      width:320px;
     }
     .card h1 { font-size:1.4rem; margin-bottom:10px; }
-    .card p { font-size:0.9rem; color:#aaa; margin-bottom:20px; }
+    .card p { color:#aaa; font-size:0.9rem; margin-bottom:20px; }
 
-    .input {
-      width:100%; padding:10px;
-      border:1px solid #333; border-radius:6px;
-      background:#1a1a1a; color:#fff;
-      margin-bottom:15px; font-size:0.95rem;
-    }
-    .btn {
-      width:100%; padding:12px;
-      border:none; border-radius:6px;
-      background:#444; color:#fff;
+    .discord-btn {
+      display:flex; align-items:center; justify-content:center; gap:10px;
+      background:#5865f2; color:#fff;
+      border:none; border-radius:8px;
       font-weight:600; cursor:pointer;
+      padding:12px; font-size:1rem; width:100%;
     }
-    .btn:hover { background:#555; }
+    .discord-btn svg { width:22px; height:22px; }
 
     /* Workspace */
-    .workspace {
-      flex:1; display:flex; align-items:center; justify-content:center;
-      position:relative;
-    }
-    .placeholder {
-      text-align:center;
-      color:#666;
-      font-size:1.2rem;
-    }
-    iframe.preview {
-      width:100%; height:100%; border:none; display:none;
-    }
+    .workspace { flex:1; display:flex; align-items:center; justify-content:center; position:relative; }
+    .placeholder { color:#666; font-size:1.2rem; text-align:center; }
+    iframe.preview { width:100%; height:100%; border:none; display:none; }
 
     /* Prompt bar */
     .prompt-bar {
-      position:fixed;
-      bottom:25px; left:50%; transform:translateX(-50%);
+      position:fixed; bottom:25px; left:50%; transform:translateX(-50%);
       background:#111; border:1px solid #333;
-      border-radius:28px;
-      padding:8px 12px;
+      border-radius:28px; padding:8px 12px;
       display:flex; align-items:center;
       width:650px; max-width:90%;
       box-shadow:0 4px 20px rgba(0,0,0,0.4);
@@ -77,17 +56,43 @@
       padding:8px 14px; cursor:pointer;
     }
     .prompt-btn:hover { background:#333; }
+
+    /* Sidebar */
+    .sidebar {
+      position:fixed; right:0; top:0; bottom:0;
+      width:240px; background:#111;
+      border-left:1px solid #333;
+      display:none; flex-direction:column;
+    }
+    .sidebar-header {
+      padding:15px; border-bottom:1px solid #333;
+      display:flex; align-items:center; gap:10px;
+    }
+    .avatar {
+      width:36px; height:36px; border-radius:50%;
+      background:#333; background-size:cover; background-position:center;
+    }
+    .username { font-size:0.95rem; }
+    .projects { flex:1; overflow-y:auto; padding:15px; }
+    .project-item {
+      padding:10px; border:1px solid #333;
+      border-radius:6px; margin-bottom:10px;
+      cursor:pointer;
+    }
+    .project-item:hover { background:#1a1a1a; }
   </style>
 </head>
 <body>
 
-<!-- Sign Up Page -->
-<div id="signupPage" class="centered">
+<!-- Sign In -->
+<div id="loginPage" class="centered">
   <div class="card">
-    <h1>Welcome to SimuWeb</h1>
-    <p>Create your AI-powered sites for free</p>
-    <input type="text" id="username" class="input" placeholder="Enter username"/>
-    <button class="btn" onclick="signUp()">Sign Up</button>
+    <h1>Sign in to SimuWeb</h1>
+    <p>AI website builder powered by Groq</p>
+    <button class="discord-btn" onclick="connectDiscord()">
+      <svg viewBox="0 0 24 24" fill="white"><path d="M20.317 4.3698a19.7913..."/></svg>
+      Sign in with Discord
+    </button>
   </div>
 </div>
 
@@ -105,51 +110,81 @@
     <input id="promptInput" class="prompt-input" placeholder="Describe your website idea..."/>
     <button id="generateBtn" class="prompt-btn" onclick="generateProject()">Generate</button>
   </div>
+
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div id="userAvatar" class="avatar"></div>
+      <div id="userName" class="username"></div>
+    </div>
+    <div class="projects" id="projectsList"></div>
+  </div>
 </div>
 
 <script>
-let user=null, projects={}, projectCounter=1;
+const clientId = "{{DISCORD_CLIENT_ID}}"; // Vercel will replace with env
+const redirectUri = window.location.origin;
 
-function signUp(){
-  const name=document.getElementById("username").value.trim();
-  if(!name){alert("Enter a username");return;}
-  user={username:name};
-  alert("Signed up!");
-  document.getElementById("signupPage").style.display="none";
+let userData = null;
+
+function connectDiscord(){
+  const url=`https://discord.com/api/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=token&scope=identify`;
+  window.location.href=url;
+}
+
+window.onload=async()=>{
+  if(window.location.hash.includes("access_token")){
+    const params=new URLSearchParams(window.location.hash.substring(1));
+    const token=params.get("access_token");
+    const res=await fetch("https://discord.com/api/users/@me",{headers:{Authorization:`Bearer ${token}`}});
+    userData=await res.json();
+    loginSuccess(userData);
+    window.history.replaceState({},document.title,redirectUri);
+  }
+};
+
+function loginSuccess(user){
+  document.getElementById("loginPage").style.display="none";
   document.getElementById("appPage").style.display="flex";
   document.getElementById("promptBar").style.display="flex";
+  document.getElementById("sidebar").style.display="flex";
+  document.getElementById("userName").innerText=user.username;
+  document.getElementById("userAvatar").style.backgroundImage=
+    `url(https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png)`;
+  loadProjects();
 }
 
-function createNewProject(){
-  const id="proj"+projectCounter++;
-  projects[id]={versions:[]};
-  return id;
-}
-
-function generateProject(){
+async function generateProject(){
   const prompt=document.getElementById("promptInput").value.trim();
   if(!prompt) return;
   const btn=document.getElementById("generateBtn");
   btn.innerText="Crafting your site.."; btn.disabled=true;
 
-  const pid=createNewProject();
-  const version=1;
+  const res=await fetch("/api/generate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({prompt,username:userData.username})});
+  const data=await res.json();
+  const { projectId, version, code } = data;
 
-  // Fake AI generation (replace with Groq fetch)
-  setTimeout(()=>{
-    const code=`<!DOCTYPE html><html><head><title>${prompt}</title></head><body style="font-family:sans-serif;text-align:center;padding:50px;"><h1>${prompt}</h1><p>Generated by SimuWeb AI</p></body></html>`;
-    projects[pid].versions.push(code);
+  document.getElementById("placeholder").style.display="none";
+  const frame=document.getElementById("previewFrame");
+  frame.style.display="block"; frame.srcdoc=code;
+  const url=`${window.location.origin}/@${userData.username}/${projectId}/${version}`;
+  window.history.pushState({}, "", url);
 
-    document.getElementById("placeholder").style.display="none";
-    const frame=document.getElementById("previewFrame");
-    frame.style.display="block";
-    frame.srcdoc=code;
+  btn.innerText="Generate"; btn.disabled=false;
+  loadProjects();
+}
 
-    const url=`${window.location.origin}/@${user.username}/${pid}/${version}`;
-    window.history.pushState({}, "", url);
-
-    btn.innerText="Generate"; btn.disabled=false;
-  },1500);
+async function loadProjects(){
+  const res=await fetch(`/api/projects?username=${userData.username}`);
+  const list=await res.json();
+  const container=document.getElementById("projectsList");
+  container.innerHTML="";
+  list.forEach(p=>{
+    const el=document.createElement("div");
+    el.className="project-item";
+    el.innerText=`${p.projectId} (v${p.version})`;
+    el.onclick=()=>{document.getElementById("previewFrame").srcdoc=p.code;};
+    container.appendChild(el);
+  });
 }
 </script>
 </body>
