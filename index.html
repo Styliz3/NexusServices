@@ -150,11 +150,11 @@ async function initEnv(){
 }
 function hydrateUserUI(){
   const url = (user.id && user.avatar) ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png` : "https://cdn.discordapp.com/embed/avatars/0.png";
-  $('homeAvatar').style.backgroundImage=`url(${url})`;
-  $('homeName').textContent=user.username||'User';
-  $('avatar').style.backgroundImage=`url(${url})`;
-  $('uname').textContent=user.username||'User';
-  $('uid').textContent=user.userId||'';
+ $('homeAvatar').style.backgroundImage = ...
+ $('homeName').textContent = ...
+ $('avatar').style.backgroundImage = ...
+ $('uname').textContent = ...
+ $('uid').textContent = ...
 }
 async function refreshIndex(){
   try{
