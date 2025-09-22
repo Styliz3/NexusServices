@@ -4,125 +4,110 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SimuWeb - AI Website Builder</title>
-  <link href="https://unpkg.com/lucide-icons/dist/umd/lucide.js" rel="preload" as="script">
   <style>
-    * { margin:0; padding:0; box-sizing:border-box; }
+    * {margin:0;padding:0;box-sizing:border-box;}
     body {
-      font-family: 'Segoe UI', Tahoma, sans-serif;
-      background:#121212; color:#f5f5f5;
-      min-height:100vh; display:flex; flex-direction:column;
+      background:#000;
+      color:#fff;
+      font-family: "Inter", sans-serif;
+      height:100vh; display:flex; flex-direction:column;
     }
-    .container { display:flex; flex:1; }
 
-    /* SIDEBAR */
-    .sidebar {
-      width:250px; background:#1a1a1a;
-      border-right:1px solid #333;
-      display:flex; flex-direction:column;
-      justify-content:space-between;
+    /* Workspace */
+    .workspace {
+      flex:1; display:flex; align-items:center; justify-content:center;
+      position:relative;
     }
-    .projects { padding:20px; flex:1; }
-    .project-item {
-      padding:10px; border:1px solid #333;
-      border-radius:6px; margin-bottom:10px;
+    .placeholder {
+      text-align:center;
+      color:#666;
+      font-size:1.2rem;
+    }
+
+    /* Floating prompt bar */
+    .prompt-bar {
+      position:fixed;
+      bottom:30px; left:50%; transform:translateX(-50%);
+      background:#111; border:1px solid #333;
+      border-radius:16px;
+      padding:12px 16px;
+      display:flex; align-items:center;
+      width:600px; max-width:90%;
+      box-shadow:0 4px 20px rgba(0,0,0,0.5);
+    }
+    .prompt-bar input {
+      flex:1; background:transparent; border:none; outline:none;
+      color:#fff; font-size:1rem;
+      padding:8px;
+    }
+    .prompt-bar button {
+      background:#222; border:1px solid #444;
+      color:#fff; padding:8px 14px;
+      border-radius:10px; cursor:pointer;
+    }
+    .prompt-bar button:hover { background:#333; }
+
+    /* Right dock (profile + new project) */
+    .dock {
+      position:fixed; top:20px; right:20px;
+      display:flex; flex-direction:column; gap:10px;
+    }
+    .dock-btn {
+      width:42px; height:42px;
+      border-radius:10px;
+      background:#1a1a1a;
+      border:1px solid #333;
+      display:flex; align-items:center; justify-content:center;
       cursor:pointer;
+      transition:0.2s;
     }
-    .project-item:hover { background:#2a2a2a; }
-
-    .profile {
-      border-top:1px solid #333;
-      padding:15px; display:flex; align-items:center; gap:10px;
-      cursor:pointer; position:relative;
-    }
+    .dock-btn:hover { background:#2a2a2a; }
     .avatar {
-      width:40px; height:40px; border-radius:50%;
-      background:#333; background-size:cover; background-position:center;
+      width:42px; height:42px;
+      border-radius:10px;
+      background:#333;
+      background-size:cover; background-position:center;
     }
     .dropdown {
-      display:none; position:absolute; bottom:60px; left:15px;
-      background:#1e1e1e; border:1px solid #333; border-radius:6px;
-      width:200px; text-align:left;
+      display:none; position:absolute; right:50px; top:0;
+      background:#111; border:1px solid #333;
+      border-radius:8px; overflow:hidden;
     }
     .dropdown button {
-      width:100%; padding:10px; background:none; border:none;
-      color:#f5f5f5; text-align:left; cursor:pointer;
+      width:150px; background:none; border:none;
+      padding:10px; color:#fff; text-align:left; cursor:pointer;
     }
-    .dropdown button:hover { background:#2a2a2a; }
-
-    /* MAIN CONTENT */
-    .main {
-      flex:1; display:flex; flex-direction:column;
-    }
-    .preview {
-      flex:1; background:#1a1a1a;
-      border-bottom:1px solid #333;
-      display:flex; align-items:center; justify-content:center;
-    }
-    .preview-frame {
-      width:100%; height:100%; border:none; background:white;
-    }
-
-    /* PROMPT BAR */
-    .prompt-bar {
-      display:flex; align-items:center;
-      padding:12px 20px;
-      border-top:1px solid #333;
-      background:#1a1a1a;
-    }
-    .prompt-input {
-      flex:1; padding:12px 15px;
-      border:1px solid #333; border-radius:25px;
-      background:#121212; color:#f5f5f5;
-      font-size:1rem; outline:none;
-    }
-    .prompt-btn {
-      margin-left:10px; padding:10px 18px;
-      border:1px solid #333; border-radius:20px;
-      background:#333; color:#f5f5f5; cursor:pointer;
-    }
-    .prompt-btn:hover { background:#444; }
+    .dropdown button:hover { background:#222; }
   </style>
 </head>
 <body>
-<div class="container" id="app" style="display:none;">
-  <div class="sidebar">
-    <div class="projects" id="projectsList">
-      <div class="project-item" onclick="createNewProject()">+ New Project</div>
-    </div>
-    <div class="profile" onclick="toggleDropdown()">
-      <div class="avatar" id="userAvatar"></div>
-      <div id="userName">User</div>
-      <div class="dropdown" id="dropdownMenu">
-        <button onclick="logout()">Log Out</button>
-      </div>
-    </div>
-  </div>
 
-  <div class="main">
-    <div class="preview">
-      <iframe id="previewFrame" class="preview-frame"></iframe>
-    </div>
-    <div class="prompt-bar">
-      <input id="promptInput" class="prompt-input" placeholder="Describe your site idea..." />
-      <button class="prompt-btn" onclick="generateProject()">Generate</button>
-    </div>
+<div class="dock">
+  <div class="dock-btn" onclick="createNewProject()">+</div>
+  <div class="avatar" id="userAvatar" onclick="toggleDropdown()"></div>
+  <div class="dropdown" id="dropdownMenu">
+    <button id="userName">User</button>
+    <button onclick="logout()">Log Out</button>
   </div>
 </div>
 
-<!-- AUTH -->
-<div id="authSection" style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh;">
-  <h1 style="margin-bottom:20px;">SimuWeb</h1>
-  <p style="margin-bottom:30px; color:#aaa;">Sign in with Discord to continue</p>
-  <button class="discord-btn" onclick="connectDiscord()" style="display:flex; align-items:center; gap:8px; background:#5865f2; color:#fff; border:none; padding:12px 20px; border-radius:6px; cursor:pointer;">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M20.317 4.3698..."/></svg>
-    Connect with Discord
-  </button>
+<div class="workspace">
+  <div id="placeholder" class="placeholder">
+    nothing here..<br>
+    <small>Your AI website will appear here</small>
+  </div>
+  <iframe id="previewFrame" style="display:none;width:100%;height:100%;border:none;"></iframe>
+</div>
+
+<div class="prompt-bar">
+  <input id="promptInput" placeholder="Describe your website idea..."/>
+  <button onclick="generateProject()">Generate</button>
 </div>
 
 <script>
-const clientId = "1362097275811135669";
-const redirectUri = window.location.origin;
-let userData=null, projects={}, projectCounter=1;
+const clientId="1362097275811135669";
+const redirectUri=window.location.origin;
+let userData=null,projects={},projectCounter=1;
 
 function connectDiscord(){
   const url=`https://discord.com/api/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=token&scope=identify`;
@@ -139,8 +124,6 @@ window.onload=async()=>{
   }
 };
 function loginSuccess(user){
-  document.getElementById("authSection").style.display="none";
-  document.getElementById("app").style.display="flex";
   document.getElementById("userName").innerText=user.username;
   document.getElementById("userAvatar").style.backgroundImage=`url(https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png)`;
 }
@@ -149,7 +132,6 @@ function toggleDropdown(){
   dd.style.display=dd.style.display==="block"?"none":"block";
 }
 function logout(){ window.location.href=redirectUri; }
-
 function createNewProject(){
   const id="proj"+projectCounter++;
   projects[id]={versions:[],current:0};
@@ -163,9 +145,12 @@ function generateProject(){
   const code=`<!DOCTYPE html><html><head><title>${prompt}</title></head><body style="font-family:sans-serif;text-align:center;padding:50px;"><h1>${prompt}</h1><p>Generated by SimuWeb AI</p></body></html>`;
   projects[pid].versions.push(code);
   projects[pid].current=version;
-  const url=`${window.location.origin}/@${userData.username}/${pid}/${version}`;
+  const url=`${window.location.origin}/@${userData?.username||"guest"}/${pid}/${version}`;
   window.history.pushState({}, "", url);
-  document.getElementById("previewFrame").srcdoc=code;
+  document.getElementById("placeholder").style.display="none";
+  const frame=document.getElementById("previewFrame");
+  frame.style.display="block";
+  frame.srcdoc=code;
 }
 </script>
 </body>
