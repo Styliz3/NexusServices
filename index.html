@@ -12,106 +12,83 @@
       --border:#2a2a2a;
       --text:#f5f5f5;
       --muted:#9aa0a6;
-      --accent:#5865f2; /* Discord blue (only place with color) */
+      --accent:#5865f2; /* Discord blue */
     }
     *{margin:0;padding:0;box-sizing:border-box}
     html,body{height:100%}
     body{
-      background:var(--bg);
-      color:var(--text);
-      font-family:Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
-      line-height:1.35;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-      display:flex;flex-direction:column;
+      background:var(--bg); color:var(--text);
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+      display:flex; flex-direction:column;
     }
 
-    /* ======= Auth (center card) ======= */
+    /* ===== Auth (center card) ===== */
     .center{flex:1;display:flex;align-items:center;justify-content:center;padding:24px}
     .card{
       width:min(360px,92vw);
-      background:var(--panel);
-      border:1px solid var(--border);
-      border-radius:16px;
-      padding:28px;
+      background:var(--panel); border:1px solid var(--border);
+      border-radius:16px; padding:28px; text-align:center;
       box-shadow:0 20px 60px rgba(0,0,0,.45);
-      text-align:center;
     }
-    .brand{
-      font-weight:800;letter-spacing:.2px;
-      font-size:1.45rem;margin-bottom:8px;
-    }
+    .brand{font-weight:800;font-size:1.45rem;margin-bottom:8px;letter-spacing:.2px}
     .tagline{color:var(--muted);font-size:.96rem;margin-bottom:22px}
     .discord-btn{
-      width:100%;
-      display:flex;align-items:center;justify-content:center;gap:10px;
-      background:var(--accent);color:#fff;border:0;cursor:pointer;
-      padding:12px 14px;border-radius:10px;font-weight:700;font-size:1rem;
+      width:100%; display:flex; align-items:center; justify-content:center; gap:12px;
+      background:var(--accent); color:#fff; border:0; cursor:pointer;
+      padding:12px 14px; border-radius:10px; font-weight:700; font-size:1rem;
       transition:transform .06s ease, filter .2s ease;
     }
     .discord-btn:hover{filter:saturate(105%) brightness(1.03)}
     .discord-btn:active{transform:translateY(1px)}
-    .discord-logo{width:22px;height:22px;object-fit:contain;filter:drop-shadow(0 0 0 rgba(0,0,0,0))}
+    .discord-logo{width:22px;height:22px;object-fit:contain}
 
-    /* ======= App layout ======= */
+    /* ===== App layout ===== */
     #app{display:none;flex:1;min-height:0}
     .workspace{
-      position:relative;
-      height:100%;
-      display:grid;
-      grid-template-columns:1fr 260px; /* content | right sidebar */
+      position:relative; height:100%;
+      display:grid; grid-template-columns:1fr 260px; /* content | right sidebar */
     }
 
     /* Main preview area */
-    .stage{
-      position:relative;display:flex;align-items:center;justify-content:center;
-      background:var(--bg);
-    }
-    .placeholder{
-      text-align:center;color:#6d7175;
-      user-select:none;
-    }
+    .stage{position:relative; display:flex; align-items:center; justify-content:center; background:var(--bg)}
+    .placeholder{text-align:center;color:#6d7175;user-select:none}
     .placeholder h2{font-size:1.28rem;font-weight:800;margin-bottom:6px;opacity:.92}
     .placeholder p{font-size:.92rem;color:#8a8f95}
-    .preview{
-      position:absolute;inset:0;border:0;display:none;background:#fff;
-    }
+    .preview{position:absolute; inset:0; border:0; display:none; background:#fff}
 
     /* Right sidebar (projects / profile) */
-    .right{
-      background:var(--panel-2);border-left:1px solid var(--border);
-      display:flex;flex-direction:column;min-height:0;
-    }
-    .profile{
-      display:flex;align-items:center;gap:10px;padding:14px 14px;
-      border-bottom:1px solid var(--border);
-    }
+    .right{background:var(--panel-2); border-left:1px solid var(--border); display:flex; flex-direction:column; min-height:0}
+    .profile{display:flex;align-items:center;gap:10px;padding:14px;border-bottom:1px solid var(--border)}
     .avatar{width:36px;height:36px;border-radius:50%;background:#2a2a2a;background-size:cover;background-position:center}
     .uname{font-weight:700;font-size:.95rem}
+    .toolbar{display:flex;gap:8px;padding:10px 12px;border-bottom:1px solid var(--border)}
+    .btn{
+      flex:1; text-align:center; background:#1e1e1e;
+      border:1px solid var(--border); color:#e9e9e9;
+      border-radius:10px; padding:8px 10px; font-weight:700; cursor:pointer; font-size:.9rem;
+    }
+    .btn:hover{background:#232323}
     .projects{flex:1;overflow:auto;padding:12px 10px 18px}
     .empty-list{color:#7a7f85;font-size:.9rem;padding:14px 10px}
     .proj{
       padding:10px 12px;border:1px solid var(--border);border-radius:10px;
       background:var(--panel);cursor:pointer;
       font-size:.92rem;display:flex;align-items:center;justify-content:space-between;
-      transition:background .15s ease, border-color .15s ease;
-      margin:8px 4px;
+      transition:background .15s ease, border-color .15s ease; margin:8px 4px;
     }
     .proj:hover{background:#1a1a1a;border-color:#3a3a3a}
     .pill{color:#aab0b6;border:1px solid #3a3a3a;border-radius:999px;padding:2px 8px;font-size:.78rem}
 
     /* Floating prompt bar */
     .dock{
-      position:fixed;left:50%;bottom:26px;transform:translateX(-50%);
+      position:fixed; left:50%; bottom:26px; transform:translateX(-50%);
       width:min(780px,94vw);
-      background:var(--panel);border:1px solid var(--border);
-      border-radius:999px;display:none;align-items:center;gap:8px;
-      padding:6px 8px;box-shadow:0 18px 60px rgba(0,0,0,.45);
+      background:#131313; border:1px solid var(--border);
+      border-radius:999px; display:none; align-items:center; gap:8px;
+      padding:6px 8px; box-shadow:0 18px 60px rgba(0,0,0,.45);
     }
-    .input{
-      flex:1;background:transparent;border:0;outline:0;color:var(--text);
-      padding:12px 16px;font-size:1rem;
-    }
+    .input{flex:1;background:transparent;border:0;outline:0;color:var(--text);padding:12px 16px;font-size:1rem}
     .go{
       appearance:none;border:1px solid #3a3a3a;background:#242424;color:#fff;
       padding:10px 16px;border-radius:22px;font-weight:700;cursor:pointer;
@@ -119,23 +96,13 @@
     }
     .go:hover{background:#2c2c2c;border-color:#4a4a4a}
     .go:active{transform:translateY(1px)}
-    .thinking{
-      display:none;align-items:center;gap:8px;margin-right:8px;
-      color:#c7cad0;font-size:.9rem;
-    }
+    .thinking{display:none;align-items:center;gap:8px;margin-left:8px;color:#c7cad0;font-size:.9rem}
     .dots{display:inline-flex;gap:2px}
-    .dot{
-      width:6px;height:6px;border-radius:50%;background:#c7cad0;opacity:.35;
-      animation:blink 1.2s infinite ease-in-out;
-    }
+    .dot{width:6px;height:6px;border-radius:50%;background:#c7cad0;opacity:.35;animation:blink 1.2s infinite ease-in-out}
     .dot:nth-child(2){animation-delay:.2s}
     .dot:nth-child(3){animation-delay:.4s}
-    @keyframes blink{
-      0%,80%,100%{opacity:.3;transform:translateY(0)}
-      40%{opacity:1;transform:translateY(-2px)}
-    }
+    @keyframes blink{0%,80%,100%{opacity:.3;transform:translateY(0)}40%{opacity:1;transform:translateY(-2px)}}
 
-    /* Small screens */
     @media (max-width:980px){
       .workspace{grid-template-columns:1fr}
       .right{position:fixed;inset:auto 0 0 0;height:54vh;border-left:0;border-top:1px solid var(--border)}
@@ -145,22 +112,23 @@
 </head>
 <body>
 
-<!-- ========== Sign in ========== -->
-<div id="login" class="center" aria-hidden="false">
+<!-- ===== Sign in ===== -->
+<div id="login" class="center">
   <div class="card" role="dialog" aria-labelledby="ttl" aria-describedby="tag">
     <div class="brand" id="ttl">SimuWeb</div>
     <div class="tagline" id="tag">Build AI-crafted websites — fast, simple, smart.</div>
     <button class="discord-btn" id="discordBtn" type="button">
-      <img class="discord-logo" alt="Discord" src="https://static.vecteezy.com/system/resources/previews/018/930/500/non_2x/discord-logo-discord-icon-transparent-free-png.png"/>
+      <img class="discord-logo" alt="Discord"
+           src="https://static.vecteezy.com/system/resources/previews/018/930/500/non_2x/discord-logo-discord-icon-transparent-free-png.png"/>
       Sign in with Discord
     </button>
   </div>
 </div>
 
-<!-- ========== App ========== -->
-<div id="app" aria-hidden="true">
+<!-- ===== App ===== -->
+<div id="app">
   <div class="workspace">
-    <!-- Main stage -->
+    <!-- main stage -->
     <div class="stage">
       <div id="empty" class="placeholder">
         <h2>Nothing to see here yet</h2>
@@ -169,12 +137,17 @@
       <iframe id="frame" class="preview"></iframe>
     </div>
 
-    <!-- Right sidebar -->
+    <!-- right sidebar -->
     <aside class="right">
       <div class="profile">
         <div id="avatar" class="avatar" aria-hidden="true"></div>
         <div id="uname" class="uname" aria-live="polite"></div>
       </div>
+
+      <div class="toolbar">
+        <button id="newProject" class="btn" type="button">New Project</button>
+      </div>
+
       <div id="list" class="projects">
         <div class="empty-list">No projects yet</div>
       </div>
@@ -182,8 +155,8 @@
   </div>
 </div>
 
-<!-- Floating dock (prompt bar) -->
-<div id="dock" class="dock" aria-hidden="true">
+<!-- prompt dock -->
+<div id="dock" class="dock">
   <div id="thinking" class="thinking" aria-live="polite">
     <span>Crafting your site</span>
     <span class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>
@@ -193,27 +166,29 @@
 </div>
 
 <script>
-/* ---------- Config (Discord) ---------- */
-const DISCORD_CLIENT_ID = "1362097275811135669"; // ✅ your client id
-const REDIRECT_URI = window.location.origin;     // must be in Discord "Redirects"
+/* ---------- Config ---------- */
+const DISCORD_CLIENT_ID = "1362097275811135669"; // your real client id
+const REDIRECT_URI = window.location.origin;     // must be added in Discord Redirects
 
 /* ---------- State ---------- */
-let user = null;          // {id, username, avatar}
-let projects = {};        // { [projectId]: [{version, code}] }
+let user = null;                // { id, username, avatar }
+let projects = {};              // { [projectId]: [{version, code}] }
 let currentProjectId = null;
 
-/* ---------- Utility ---------- */
+/* ---------- DOM helpers ---------- */
 const $ = id => document.getElementById(id);
-function show(el, on=true){ el.style.display = on ? "" : "none"; }
-function setHidden(el, hidden){ el.setAttribute("aria-hidden", hidden ? "true" : "false"); }
+function showBlock(el){ el.style.display = "block"; }
+function showFlex(el){ el.style.display = "flex"; }
+function hide(el){ el.style.display = "none"; }
 
-/* ---------- Auth Flow ---------- */
+/* ---------- Discord Auth ---------- */
 $("discordBtn").onclick = () => {
   const url = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=identify`;
   window.location.href = url;
 };
 
 window.addEventListener("load", async () => {
+  // Handle redirect with access_token
   if (window.location.hash.includes("access_token")) {
     try{
       const params = new URLSearchParams(window.location.hash.substring(1));
@@ -221,41 +196,57 @@ window.addEventListener("load", async () => {
       const r = await fetch("https://discord.com/api/users/@me", {
         headers: { Authorization: `Bearer ${token}` }
       });
+      if(!r.ok) throw new Error("Discord identify failed");
       user = await r.json();
-      // clean hash
+
+      // Clean URL hash
       history.replaceState({}, document.title, REDIRECT_URI);
+
+      // Enter app view
       enterApp(user);
     }catch(e){
       console.error(e);
-      alert("Discord sign-in failed. Check your Redirect URL and Client ID.");
+      alert("Discord sign-in failed. Check Client ID and Redirect URL in the Developer Portal.");
     }
   }
 });
 
-/* ---------- Enter App ---------- */
+/* ---------- Enter App (fix for black screen) ---------- */
 function enterApp(u){
-  // swap views
-  setHidden($("login"), true);
-  show($("login"), false);
-  setHidden($("app"), false);
-  show($("app"), true);
-  setHidden($("dock"), false);
-  show($("dock"), true);
+  // ensure login hidden, app + dock visible with explicit display modes
+  hide($("login"));
+  showBlock($("app"));
+  showFlex($("dock"));
 
   // profile
   $("uname").textContent = u.username || "User";
-  $("avatar").style.backgroundImage = `url(https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png)`;
+  const avatarUrl = (u.id && u.avatar)
+    ? `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png`
+    : "https://cdn.discordapp.com/embed/avatars/0.png";
+  $("avatar").style.backgroundImage = `url(${avatarUrl})`;
 
-  // try to load list from server; if fails, stay empty
+  // start with an empty current project
+  currentProjectId = null;
+
+  // load existing projects (from server if you have an API; noop otherwise)
   refreshList();
 }
 
+/* ---------- Project creation ---------- */
+$("newProject").onclick = () => {
+  currentProjectId = "proj" + Date.now();
+  if(!projects[currentProjectId]) projects[currentProjectId] = [];
+  // focus prompt so user can start typing
+  $("prompt").focus();
+  // also update URL to project root (version will be appended on first generation)
+  const uname = (user?.username || "guest").replace(/[^\w\-\.]/g,"_");
+  history.pushState({}, "", `${window.location.origin}/@${uname}/${currentProjectId}`);
+  refreshList();
+};
+
 /* ---------- Prompt UX ---------- */
 $("prompt").addEventListener("keydown", (e)=>{
-  if(e.key==="Enter" && !e.shiftKey){
-    e.preventDefault();
-    $("go").click();
-  }
+  if(e.key==="Enter" && !e.shiftKey){ e.preventDefault(); $("go").click(); }
 });
 document.addEventListener("keydown",(e)=>{
   if(e.key==="F2"){ e.preventDefault(); $("prompt").focus(); }
@@ -266,57 +257,74 @@ $("go").onclick = async () => {
   const text = $("prompt").value.trim();
   if(!text) return;
 
+  // if no project yet, create one
+  if(!currentProjectId){
+    currentProjectId = "proj" + Date.now();
+    projects[currentProjectId] = [];
+  }
+
   // status UI
   $("go").disabled = true;
   $("go").textContent = "Crafting…";
-  show($("thinking"), true);
+  showFlex($("thinking"));
 
   try{
-    // call your server (recommended) to protect GROQ_API_KEY
-    // expects: { projectId, version, code }
+    // Preferred: server route that uses GROQ_API_KEY securely
+    // Your /api/generate should return: { projectId, version, code }
     const resp = await fetch("/api/generate", {
       method:"POST",
       headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({ prompt:text, username: user?.username || "guest" })
+      body:JSON.stringify({
+        prompt: text,
+        username: user?.username || "guest",
+        projectId: currentProjectId,
+        model: "qwen/qwen3-32b"
+      })
     });
 
-    if(!resp.ok) throw new Error("Server error while generating");
-
-    const data = await resp.json();
-    applyGeneration(data);
+    if (resp.ok){
+      const data = await resp.json();
+      applyGeneration(data);
+    } else {
+      // If API not ready, use client-side demo fallback so app still works
+      throw new Error("Server not available; using demo fallback.");
+    }
 
   }catch(err){
-    console.warn(err);
-    // fallback for demos if /api/generate not set up yet
-    const projectId = currentProjectId || ("proj" + Date.now());
-    const version = (projects[projectId]?.length || 0) + 1;
-    const code = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${text}</title><style>body{font-family:sans-serif;display:grid;place-items:center;height:100vh;margin:0} h1{margin:0 0 8px} .s{color:#555}</style></head><body><main><h1>${text}</h1><p class="s">Generated by SimuWeb demo</p></main></body></html>`;
-    applyGeneration({ projectId, version, code });
-  }finally{
+    console.warn(err.message);
+    const version = (projects[currentProjectId]?.length || 0) + 1;
+    const demo = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${text}</title><style>
+      :root{--c:#111;--t:#111}
+      body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial;display:grid;place-items:center;height:100vh;margin:0}
+      main{max-width:800px;padding:32px;border:1px solid #ddd;border-radius:14px}
+      h1{margin:0 0 8px}
+      p{margin:0;color:#444}
+    </style></head><body><main>
+      <h1>${text}</h1><p>Generated by SimuWeb (demo fallback)</p>
+    </main></body></html>`;
+    applyGeneration({ projectId: currentProjectId, version, code: demo });
+  } finally {
     $("go").disabled = false;
     $("go").textContent = "Generate";
-    show($("thinking"), false);
+    hide($("thinking"));
   }
 };
 
 function applyGeneration({projectId, version, code}){
-  // store
   if(!projects[projectId]) projects[projectId] = [];
   projects[projectId].push({version, code});
-  currentProjectId = projectId;
 
   // URL pattern /@username/projectId/version
   const uname = (user?.username || "guest").replace(/[^\w\-\.]/g,"_");
-  const url = `${window.location.origin}/@${uname}/${projectId}/${version}`;
-  history.pushState({}, "", url);
+  history.pushState({}, "", `${window.location.origin}/@${uname}/${projectId}/${version}`);
 
-  // show in stage
-  $("empty").style.display = "none";
+  // Show in stage
+  hide($("empty"));
   const frame = $("frame");
   frame.style.display = "block";
   frame.srcdoc = code;
 
-  // update list
+  // Update list
   refreshList();
 }
 
@@ -334,19 +342,20 @@ function refreshList(){
   }
   keys.forEach(pid=>{
     const latest = projects[pid][projects[pid].length-1];
-    const item = document.createElement("div");
-    item.className = "proj";
-    item.innerHTML = `<span>${pid}</span><span class="pill">v${latest.version}</span>`;
-    item.onclick = ()=>{
+    const el = document.createElement("div");
+    el.className = "proj";
+    el.innerHTML = `<span>${pid}</span><span class="pill">v${latest.version}</span>`;
+    el.onclick = ()=>{
       const v = latest.version;
       const uname = (user?.username || "guest").replace(/[^\w\-\.]/g,"_");
       history.pushState({}, "", `${window.location.origin}/@${uname}/${pid}/${v}`);
-      $("empty").style.display = "none";
-      $("frame").style.display = "block";
-      $("frame").srcdoc = latest.code;
+      hide($("empty"));
+      const frame = $("frame");
+      frame.style.display = "block";
+      frame.srcdoc = latest.code;
       currentProjectId = pid;
     };
-    root.appendChild(item);
+    root.appendChild(el);
   });
 }
 </script>
