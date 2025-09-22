@@ -23,96 +23,114 @@
       color:#666;
       font-size:1.2rem;
     }
+    iframe.preview {
+      width:100%; height:100%; border:none; display:none;
+    }
 
-    /* Floating prompt bar */
+    /* Prompt bar */
     .prompt-bar {
       position:fixed;
-      bottom:30px; left:50%; transform:translateX(-50%);
+      bottom:25px; left:50%; transform:translateX(-50%);
       background:#111; border:1px solid #333;
-      border-radius:16px;
-      padding:12px 16px;
+      border-radius:28px;
+      padding:8px 12px;
       display:flex; align-items:center;
-      width:600px; max-width:90%;
-      box-shadow:0 4px 20px rgba(0,0,0,0.5);
+      width:650px; max-width:90%;
+      box-shadow:0 4px 20px rgba(0,0,0,0.4);
     }
-    .prompt-bar input {
-      flex:1; background:transparent; border:none; outline:none;
+    .prompt-input {
+      flex:1;
+      background:transparent; border:none; outline:none;
       color:#fff; font-size:1rem;
-      padding:8px;
+      padding:10px 14px;
     }
-    .prompt-bar button {
-      background:#222; border:1px solid #444;
-      color:#fff; padding:8px 14px;
-      border-radius:10px; cursor:pointer;
-    }
-    .prompt-bar button:hover { background:#333; }
-
-    /* Right dock (profile + new project) */
-    .dock {
-      position:fixed; top:20px; right:20px;
-      display:flex; flex-direction:column; gap:10px;
-    }
-    .dock-btn {
-      width:42px; height:42px;
-      border-radius:10px;
-      background:#1a1a1a;
-      border:1px solid #333;
+    .prompt-btn {
       display:flex; align-items:center; justify-content:center;
-      cursor:pointer;
+      border:none; outline:none; cursor:pointer;
+      background:#222; color:#fff;
+      border-radius:20px; padding:8px 14px;
+      font-size:0.9rem;
       transition:0.2s;
     }
-    .dock-btn:hover { background:#2a2a2a; }
+    .prompt-btn:hover { background:#333; }
+
+    /* Sidebar (right) */
+    .sidebar {
+      position:fixed;
+      right:0; top:0; bottom:0;
+      width:250px;
+      background:#111;
+      border-left:1px solid #333;
+      display:flex; flex-direction:column;
+    }
+    .sidebar-header {
+      padding:15px;
+      border-bottom:1px solid #333;
+      display:flex; align-items:center; gap:10px;
+    }
     .avatar {
-      width:42px; height:42px;
-      border-radius:10px;
-      background:#333;
-      background-size:cover; background-position:center;
+      width:36px; height:36px;
+      border-radius:50%;
+      background:#333; background-size:cover; background-position:center;
     }
-    .dropdown {
-      display:none; position:absolute; right:50px; top:0;
-      background:#111; border:1px solid #333;
-      border-radius:8px; overflow:hidden;
+    .username { font-size:0.95rem; color:#fff; }
+    .projects {
+      flex:1; overflow-y:auto; padding:15px;
     }
-    .dropdown button {
-      width:150px; background:none; border:none;
-      padding:10px; color:#fff; text-align:left; cursor:pointer;
+    .project-item {
+      padding:10px;
+      border:1px solid #333;
+      border-radius:6px;
+      margin-bottom:10px;
+      cursor:pointer;
     }
-    .dropdown button:hover { background:#222; }
+    .project-item:hover { background:#1a1a1a; }
   </style>
 </head>
 <body>
 
-<div class="dock">
-  <div class="dock-btn" onclick="createNewProject()">+</div>
-  <div class="avatar" id="userAvatar" onclick="toggleDropdown()"></div>
-  <div class="dropdown" id="dropdownMenu">
-    <button id="userName">User</button>
-    <button onclick="logout()">Log Out</button>
-  </div>
-</div>
-
+<!-- Workspace -->
 <div class="workspace">
   <div id="placeholder" class="placeholder">
     nothing here..<br>
     <small>Your AI website will appear here</small>
   </div>
-  <iframe id="previewFrame" style="display:none;width:100%;height:100%;border:none;"></iframe>
+  <iframe id="previewFrame" class="preview"></iframe>
 </div>
 
+<!-- Prompt Bar -->
 <div class="prompt-bar">
-  <input id="promptInput" placeholder="Describe your website idea..."/>
-  <button onclick="generateProject()">Generate</button>
+  <input id="promptInput" class="prompt-input" placeholder="Describe your website idea..."/>
+  <button id="generateBtn" class="prompt-btn" onclick="generateProject()">Generate</button>
+</div>
+
+<!-- Sidebar (right) -->
+<div class="sidebar">
+  <div class="sidebar-header" id="authArea">
+    <button onclick="connectDiscord()" style="display:flex;align-items:center;gap:8px;background:#5865f2;border:none;padding:8px 12px;border-radius:6px;cursor:pointer;color:#fff;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+        <path d="M20.317 4.3698a19.7913..."/>
+      </svg>
+      Sign in
+    </button>
+  </div>
+  <div class="projects" id="projectsList">
+    <!-- Projects appear here -->
+  </div>
 </div>
 
 <script>
-const clientId="1362097275811135669";
+const clientId="YOUR_DISCORD_CLIENT_ID";
 const redirectUri=window.location.origin;
-let userData=null,projects={},projectCounter=1;
+const GROQ_API_KEY="YOUR_GROQ_API_KEY"; // set in vercel env
+
+let userData=null, projects={}, projectCounter=1;
 
 function connectDiscord(){
   const url=`https://discord.com/api/oauth2/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=token&scope=identify`;
   window.location.href=url;
 }
+
 window.onload=async()=>{
   if(window.location.hash.includes("access_token")){
     const params=new URLSearchParams(window.location.hash.substring(1));
@@ -123,34 +141,77 @@ window.onload=async()=>{
     window.history.replaceState({},document.title,redirectUri);
   }
 };
+
 function loginSuccess(user){
-  document.getElementById("userName").innerText=user.username;
-  document.getElementById("userAvatar").style.backgroundImage=`url(https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png)`;
+  document.getElementById("authArea").innerHTML=`
+    <div class="avatar" style="background-image:url(https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png)"></div>
+    <div class="username">${user.username}</div>
+  `;
 }
-function toggleDropdown(){
-  const dd=document.getElementById("dropdownMenu");
-  dd.style.display=dd.style.display==="block"?"none":"block";
+
+function saveProject(id, code){
+  projects[id].versions.push(code);
+  localStorage.setItem("simuweb-projects", JSON.stringify(projects));
+  renderProjects();
 }
-function logout(){ window.location.href=redirectUri; }
-function createNewProject(){
-  const id="proj"+projectCounter++;
-  projects[id]={versions:[],current:0};
+
+function renderProjects(){
+  const list=document.getElementById("projectsList");
+  list.innerHTML="";
+  Object.keys(projects).forEach(pid=>{
+    const latest=projects[pid].versions.length;
+    const el=document.createElement("div");
+    el.className="project-item";
+    el.innerText=`${pid} (v${latest})`;
+    el.onclick=()=>loadProject(pid,latest);
+    list.appendChild(el);
+  });
 }
-function generateProject(){
-  const prompt=document.getElementById("promptInput").value.trim();
-  if(!prompt) return;
-  const pid="proj"+(projectCounter-1);
-  if(!projects[pid]) createNewProject();
-  const version=projects[pid].versions.length+1;
-  const code=`<!DOCTYPE html><html><head><title>${prompt}</title></head><body style="font-family:sans-serif;text-align:center;padding:50px;"><h1>${prompt}</h1><p>Generated by SimuWeb AI</p></body></html>`;
-  projects[pid].versions.push(code);
-  projects[pid].current=version;
-  const url=`${window.location.origin}/@${userData?.username||"guest"}/${pid}/${version}`;
-  window.history.pushState({}, "", url);
+
+function loadProject(pid,version){
+  const code=projects[pid].versions[version-1];
   document.getElementById("placeholder").style.display="none";
   const frame=document.getElementById("previewFrame");
   frame.style.display="block";
   frame.srcdoc=code;
+  const url=`${window.location.origin}/@${userData?.username||"guest"}/${pid}/${version}`;
+  window.history.pushState({}, "", url);
+}
+
+async function generateProject(){
+  const prompt=document.getElementById("promptInput").value.trim();
+  if(!prompt) return;
+
+  const btn=document.getElementById("generateBtn");
+  btn.innerText="Crafting your site..";
+  btn.disabled=true;
+
+  const pid="proj"+projectCounter++;
+  projects[pid]={versions:[]};
+
+  try{
+    const res=await fetch("https://api.groq.com/openai/v1/chat/completions",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "Authorization":"Bearer "+GROQ_API_KEY
+      },
+      body:JSON.stringify({
+        model:"qwen/qwen3-32b",
+        messages:[{role:"user",content:`Generate a complete HTML/CSS/JS site for: ${prompt}`}],
+        temperature:0.7
+      })
+    });
+    const data=await res.json();
+    const code=data.choices[0].message.content;
+    saveProject(pid, code);
+    loadProject(pid,1);
+  }catch(e){
+    alert("Error: "+e.message);
+  }
+
+  btn.innerText="Generate";
+  btn.disabled=false;
 }
 </script>
 </body>
