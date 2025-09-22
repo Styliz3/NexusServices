@@ -1,8 +1,5 @@
 {
   "name": "simuweb",
   "private": true,
-  "engines": { "node": "20.x" },
-  "dependencies": {
-    "@vercel/kv": "^1.0.1"
-  }
+  "engines": { "node": "20.x" }
 }
