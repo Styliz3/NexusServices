@@ -129,142 +129,123 @@
 <div id="toasts" class="toasts" aria-live="polite"></div>
 
 <script>
-/* ---------- state + utils ---------- */
-let DISCORD_CLIENT_ID = null;
-let user = null;
-let currentProjectId = null;
-const MODEL = "qwen/qwen3-32b";
-const REDIRECT_URI = location.origin + location.pathname;
-const $ = (id)=>document.getElementById(id);
-function show(el){ el.classList.remove('hidden'); }
-function hide(el){ el.classList.add('hidden'); }
-function toast(kind,title,msg){ const t=document.createElement('div'); t.className=`toast ${kind}`; t.innerHTML=`<h4>${title}</h4><p>${msg||""}</p>`; $('toasts').appendChild(t); setTimeout(()=>t.remove(),6000); }
-function uid(){return "u_"+Math.random().toString(36).slice(2)+Date.now().toString(36)}
-function sanitize(s){return (s||"").replace(/[^\w\-.]/g,"_")}
-function saveSession(u){ try{localStorage.setItem("simuweb:user",JSON.stringify(u));}catch{} }
-function loadSession(){ try{const r=localStorage.getItem("simuweb:user");return r?JSON.parse(r):null;}catch{return null;} }
-
-/* ---------- preview logic ---------- */
+/* ---------- SimuWebPreview inline ---------- */
 const SimuWebPreview = {
-  async loadProjects(){
-    try{
-      const userKey=encodeURIComponent(user?.userId||user?.username);
-      const idx=await fetch(`/api/projects?userKey=${userKey}`).then(r=>r.json());
-      this.renderProjectIndex(idx);
-    }catch{ this.renderProjectIndex([]); }
-  },
-  renderProjectIndex(list){
-    const root=$('list'); root.innerHTML='';
-    if(!list||!list.length){ root.innerHTML='<div class="empty">No projects yet</div>'; return; }
-    list.forEach(p=>{
-      const el=document.createElement('div'); el.className='proj';
-      el.innerHTML=`<span>${p.projectId}</span><span class="pill">v${p.lastVersion}</span>`;
-      el.onclick=async()=>{
-        const res=await fetch(`/api/projects?userKey=${encodeURIComponent(user?.userId||user?.username)}&projectId=${encodeURIComponent(p.projectId)}&version=${encodeURIComponent(p.lastVersion)}`);
-        const manifest=await res.json();
-        await this.renderManifestToPreview(manifest);
-        history.pushState({}, "", `/@${sanitize(user?.username||'guest')}/${p.projectId}/${p.lastVersion}`);
-        currentProjectId=p.projectId;
-      };
-      root.appendChild(el);
-    });
-  },
-  async renderManifestToPreview(manifest){
-    const {html}=await this.bundleManifest(manifest);
-    $('placeholder').classList.add('hidden');
-    const f=$('frame'); f.style.display='block'; f.srcdoc=html;
-  },
-  async bundleManifest(manifest){
-    if(!manifest||!manifest.files){ return {html:String(manifest||'<!doctype html><title>Empty</title>')}; }
-    const map=new Map(manifest.files.map(f=>[f.name,f.content]));
-    const entry=manifest.entry||'index.html';
-    let entryHtml=map.get(entry)||'<html><body>Empty</body></html>';
-    const parser=new DOMParser(); const doc=parser.parseFromString(entryHtml,'text/html');
-    doc.querySelectorAll('link[rel="stylesheet"][href]').forEach(link=>{
-      const href=link.getAttribute('href'); const css=map.get(href);
-      if(css!=null){ const style=doc.createElement('style'); style.textContent=css; link.replaceWith(style); }
-    });
-    doc.querySelectorAll('script[src]').forEach(script=>{
-      const src=script.getAttribute('src'); const js=map.get(src);
-      if(js!=null){ const s=doc.createElement('script'); s.textContent=js; script.replaceWith(s); }
-    });
-    return {html:'<!DOCTYPE html>\n'+doc.documentElement.outerHTML};
-  },
-  showWriteProgress(files){
-    const root=$('list'); root.innerHTML='';
-    (files||[]).forEach(f=>{
-      const row=document.createElement('div'); row.className='proj';
-      row.innerHTML=`<span>Writing ${f.name}</span><span class="pill">…</span>`;
-      root.appendChild(row);
-    });
-  },
-  createNewProject(){
-    currentProjectId="proj"+Date.now();
-    history.replaceState({}, "", `/@${sanitize(user?.username||'guest')}/${currentProjectId}`);
-    this.renderProjectIndex([]);
-  },
-  async maybeLoadDeepLink(){
-    const parts=location.pathname.split('/').filter(Boolean);
-    if(parts[0]?.startsWith('@')&&parts.length>=3){
-      if(!user) return;
-      const pid=parts[1]; const ver=parts[2];
-      try{
-        const res=await fetch(`/api/projects?userKey=${encodeURIComponent(user?.userId||user?.username)}&projectId=${encodeURIComponent(pid)}&version=${encodeURIComponent(ver)}`);
-        if(res.ok){ const manifest=await res.json(); if(manifest?.files?.length){ await this.renderManifestToPreview(manifest); show($('route-builder')); $('dock').style.display='flex'; currentProjectId=pid; } }
-      }catch{}
+  async bundle(manifest) {
+    if (!manifest || !manifest.files) {
+      return { html: "<!doctype html><title>Empty</title>" };
     }
+    const map = new Map(manifest.files.map(f => [f.name, f.content]));
+    const entry = manifest.entry || "index.html";
+    let entryHtml = map.get(entry) || "<!doctype html><title>Empty</title>";
+
+    if (!/^<!doctype html>/i.test(entryHtml.trim()))
+      entryHtml = "<!doctype html>\n" + entryHtml;
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(entryHtml, "text/html");
+
+    // inline CSS
+    doc.querySelectorAll('link[rel="stylesheet"][href]').forEach(link => {
+      const href = link.getAttribute("href");
+      const css = map.get(href);
+      if (css != null) {
+        const style = doc.createElement("style");
+        style.textContent = css;
+        link.replaceWith(style);
+      }
+    });
+
+    // inline JS
+    doc.querySelectorAll("script[src]").forEach(script => {
+      const src = script.getAttribute("src");
+      const js = map.get(src);
+      if (js != null) {
+        const s = doc.createElement("script");
+        if (script.type) s.type = script.type;
+        s.textContent = js;
+        script.replaceWith(s);
+      }
+    });
+
+    return { html: "<!doctype html>\n" + doc.documentElement.outerHTML };
+  },
+  async render(manifest) {
+    const { html } = await this.bundle(manifest);
+    document.getElementById("placeholder").classList.add("hidden");
+    const f = document.getElementById("frame");
+    f.style.display = "block";
+    f.srcdoc = html;
   }
 };
 
-/* ---------- routing + auth ---------- */
+/* ---------- state + utils ---------- */
+let DISCORD_CLIENT_ID=null;
+let user=null;
+let currentProjectId=null;
+const MODEL="qwen/qwen3-32b";
+const REDIRECT_URI=location.origin+location.pathname;
+const $=(id)=>document.getElementById(id);
+function show(el){el.classList.remove('hidden');}
+function hide(el){el.classList.add('hidden');}
+function toast(kind,title,msg){const t=document.createElement('div');t.className=`toast ${kind}`;t.innerHTML=`<h4>${title}</h4><p>${msg||""}</p>`;$('toasts').appendChild(t);setTimeout(()=>t.remove(),6000);}
+function uid(){return "u_"+Math.random().toString(36).slice(2)+Date.now().toString(36)}
+function sanitize(s){return (s||"").replace(/[^\w\-.]/g,"_")}
+function saveSession(u){try{localStorage.setItem("simuweb:user",JSON.stringify(u));}catch{}}
+function loadSession(){try{const r=localStorage.getItem("simuweb:user");return r?JSON.parse(r):null;}catch{return null;}}
+
+/* ---------- UI helpers ---------- */
 function hydrateUserUI(){
-  const url=(user.id&&user.avatar)?`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`:"https://cdn.discordapp.com/embed/avatars/0.png";
-  const set=(id,fn)=>{const el=$(id);if(el)fn(el);};
-  set("homeAvatar",el=>el.style.backgroundImage=`url(${url})`);
-  set("homeName",el=>el.textContent=user.username||"User");
-  set("avatar",el=>el.style.backgroundImage=`url(${url})`);
-  set("uname",el=>el.textContent=user.username||"User");
-  set("uid",el=>el.textContent=user.userId||"");
+  if(!user)return;
+  const url = (user.id && user.avatar)
+    ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`
+    : "https://cdn.discordapp.com/embed/avatars/0.png";
+  $('homeAvatar').style.backgroundImage=`url(${url})`;
+  $('homeName').textContent=user.username||'User';
+  $('avatar').style.backgroundImage=`url(${url})`;
+  $('uname').textContent=user.username||'User';
+  $('uid').textContent=user.userId||'';
 }
+
 function renderRoute(){
   const p=location.pathname;
-  const isHome=p.endsWith("/home")||p==="/home";
-  const isBuilder=/\/@/.test(p)||p.endsWith("/builder");
   hide($('route-login')); hide($('route-home')); hide($('route-builder'));
-  if(!user){show($('route-login'));return;}
-  if(isHome){show($('route-home'));return;}
-  if(isBuilder){show($('route-builder'));$('dock').style.display='flex';return;}
-  go("/home");
+  if(!user){ show($('route-login')); return; }
+  if(p.endsWith("/home")||p==="/home"){ show($('route-home')); return; }
+  if(/\/@/.test(p)||p.endsWith("/builder")){ show($('route-builder')); $('dock').style.display='flex'; return; }
+  show($('route-home'));
 }
-function go(path){history.pushState({}, "", path);renderRoute();}
 
-/* ---------- bootstrap ---------- */
 async function bootstrap(){
-  try{DISCORD_CLIENT_ID=(await fetch("/api/env").then(r=>r.json())).discordClientId;}catch{}
+  try{ DISCORD_CLIENT_ID = (await fetch("/api/env").then(r=>r.json())).discordClientId; }catch{}
   const ses=loadSession();
-  if(ses){user=ses;hydrateUserUI();go('/home');await SimuWebPreview.loadProjects();await SimuWebPreview.maybeLoadDeepLink();}
-  else{renderRoute();}
-  $('discordBtn').onclick=()=>{if(!DISCORD_CLIENT_ID){toast('err','Missing config','DISCORD_CLIENT_ID not available.');return;}const url=`https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=identify`;location.href=url;};
-  $('startProject').onclick=()=>{go('/builder');$('dock').style.display='flex';SimuWebPreview.createNewProject();$('prompt').focus();};
-  $('newProject').onclick=()=>SimuWebPreview.createNewProject();
-  $('prompt').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();$('go').click();}});
-  document.addEventListener('keydown',e=>{if(e.key==='F2'){e.preventDefault();$('prompt').focus();}});
-  if(location.hash.includes('access_token')){
+  if(ses){ user=ses; hydrateUserUI(); renderRoute(); }
+  else{ renderRoute(); }
+
+  $('discordBtn').onclick=()=>{
+    if(!DISCORD_CLIENT_ID){ toast('err','Missing config','DISCORD_CLIENT_ID not available.'); return; }
+    const url=`https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=identify`;
+    location.href=url;
+  };
+
+  // oauth callback
+  if(location.hash.includes("access_token")){
     try{
       const params=new URLSearchParams(location.hash.substring(1));
-      const token=params.get('access_token');
-      const r=await fetch('https://discord.com/api/users/@me',{headers:{Authorization:`Bearer ${token}`}});
-      if(!r.ok) throw new Error('Discord identify failed');
+      const token=params.get("access_token");
+      const r=await fetch("https://discord.com/api/users/@me",{headers:{Authorization:`Bearer ${token}`}});
+      if(!r.ok) throw new Error("Discord identify failed");
       const d=await r.json();
       user={id:d.id,username:d.username,avatar:d.avatar,userId:uid()};
-      saveSession(user);history.replaceState({},document.title,REDIRECT_URI);
-      hydrateUserUI();go("/home");toast("ok","Signed in","Welcome!");
-      await SimuWebPreview.loadProjects();await SimuWebPreview.maybeLoadDeepLink();
-    }catch(e){console.error(e);toast("err","Sign-in failed","Try again.");renderRoute();}
+      saveSession(user);
+      history.replaceState({},document.title,REDIRECT_URI);
+      hydrateUserUI(); renderRoute(); toast("ok","Signed in","Welcome to SimuWeb!");
+    }catch(e){ console.error(e); toast("err","Sign-in failed","Try again."); }
   }
-  window.addEventListener('popstate',renderRoute);
+
+  window.addEventListener("popstate",renderRoute);
 }
-$('go').onclick=async()=>{const text=$('prompt').value.trim();if(!text)return;if(!currentProjectId)SimuWebPreview.createNewProject();$('go').disabled=true;$('go').textContent='Crafting…';$('thinking').style.display='flex';try{const res=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:text,username:user?.username||'guest',userId:user?.userId||user?.username,projectId:currentProjectId,model:MODEL})});if(!res.ok)throw new Error(await res.text());const data=await res.json();SimuWebPreview.showWriteProgress(data.manifest?.files||[]);await new Promise(r=>setTimeout(r,350));await SimuWebPreview.renderManifestToPreview(data.manifest);history.pushState({}, "", `/@${sanitize(user?.username||'guest')}/${data.projectId}/${data.version}`);await SimuWebPreview.loadProjects();toast('ok','Site ready','Preview updated.');}catch(err){console.error(err);toast('err','We hit a snag','Please try again.');}finally{$('go').disabled=false;$('go').textContent='Generate';$('thinking').style.display='none';}};
+
 window.onload=bootstrap;
 </script>
 </body>
