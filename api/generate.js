@@ -12,6 +12,11 @@ async function readBody(req) {
   });
 }
 
+function stripCodeFences(s = "") {
+  // Remove ```json / ```html / ``` fences if model emits them
+  return s.replace(/^```[\s\S]*?\n/, "").replace(/```$/,"").trim();
+}
+
 module.exports = async function handler(req, res) {
   try {
     if (req.method !== "POST") {
@@ -40,8 +45,17 @@ module.exports = async function handler(req, res) {
             role: "system",
             content:
 `Return ONLY JSON (no markdown) like:
-{"entry":"index.html","files":[{"name":"index.html","content":"<!doctype html>..."},{"name":"style.css","content":"..."},{"name":"app.js","content":"..."}]}
-All references in HTML must match files you include.`
+{
+  "entry":"index.html",
+  "files":[
+    {"name":"index.html","content":"<!doctype html>..."},
+    {"name":"style.css","content":"/* css */"},
+    {"name":"app.js","content":"// js"}
+  ]
+}
+- Do not add backticks or code fences.
+- Ensure <link> and <script src> paths match the "files" names.
+- HTML must be full HTML5 documents (doctype, head, body).`
           },
           { role: "user", content: `Create a small working website for: ${prompt}.` }
         ],
@@ -59,17 +73,29 @@ All references in HTML must match files you include.`
     }
 
     const data = await groq.json();
+    let raw = data?.choices?.[0]?.message?.content || "";
+    raw = stripCodeFences(raw);
+
     let manifest;
     try {
-      manifest = JSON.parse(data?.choices?.[0]?.message?.content || "{}");
+      manifest = JSON.parse(raw);
     } catch {
+      // If model returned plain HTML, wrap it as a single-file project.
       manifest = {
         entry: "index.html",
-        files: [{ name: "index.html", content: data?.choices?.[0]?.message?.content || "<!doctype html><title>Empty</title>" }]
+        files: [{ name: "index.html", content: raw || "<!doctype html><title>Empty</title>" }]
       };
     }
 
-    // Persist (if KV is configured)
+    // Basic sanity: ensure doctype on HTML files
+    manifest.files = (manifest.files || []).map(f => {
+      if (f.name.toLowerCase().endsWith(".html") && !/^<!doctype html>/i.test(f.content.trim())) {
+        f.content = "<!doctype html>\n" + f.content;
+      }
+      return f;
+    });
+
+    // Persist to KV (if configured)
     const userKey = userId || username;
     let nextVersion = 1;
     if (kv) {
