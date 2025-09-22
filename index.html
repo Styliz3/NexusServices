@@ -5,128 +5,69 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>SimuWeb — AI Website Builder</title>
   <style>
-    :root{
-      --bg:#0c0c0c; --panel:#131313; --panel2:#161616;
-      --border:#2a2a2a; --text:#f5f5f5; --muted:#9aa0a6;
-      --accent:#5865f2; /* Discord blue (only color) */
-      --ok:#24b47e; --warn:#f5a623; --err:#ff5c5c;
-    }
+    :root{--bg:#0c0c0c;--panel:#131313;--panel2:#161616;--border:#2a2a2a;--text:#f5f5f5;--muted:#9aa0a6;--accent:#5865f2;--ok:#24b47e;--err:#ff5c5c}
     *{margin:0;padding:0;box-sizing:border-box}
     html,body{height:100%}
-    body{
-      background:var(--bg); color:var(--text);
-      font-family:Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
-      display:flex; flex-direction:column;
-    }
-    a{color:inherit;text-decoration:none}
-    .hidden{display:none !important}
-
-    /* ===== Auth (center card) ===== */
+    body{background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;display:flex;flex-direction:column}
+    .hidden{display:none!important}
+    /* login card */
     .center{flex:1;display:flex;align-items:center;justify-content:center;padding:24px}
-    .card{
-      width:min(380px,92vw);
-      background:var(--panel); border:1px solid var(--border);
-      border-radius:16px; padding:28px; text-align:center;
-      box-shadow:0 20px 60px rgba(0,0,0,.45);
-    }
-    .brand{font-weight:800;font-size:1.55rem;margin-bottom:6px;letter-spacing:.2px}
+    .card{width:min(380px,92vw);background:#131313;border:1px solid var(--border);border-radius:16px;padding:28px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.45)}
+    .brand{font-weight:800;font-size:1.55rem;margin-bottom:6px}
     .tagline{color:var(--muted);font-size:.96rem;margin-bottom:22px}
-    .discord-btn{
-      width:100%; display:flex; align-items:center; justify-content:center; gap:12px;
-      background:var(--accent); color:#fff; border:0; cursor:pointer;
-      padding:12px 14px; border-radius:10px; font-weight:700; font-size:1rem;
-      transition:transform .06s ease, filter .2s ease;
-    }
-    .discord-btn:hover{filter:saturate(105%) brightness(1.03)}
-    .discord-btn:active{transform:translateY(1px)}
+    .discord-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:12px;background:var(--accent);color:#fff;border:0;cursor:pointer;padding:12px 14px;border-radius:10px;font-weight:700;font-size:1rem}
     .discord-logo{width:22px;height:22px;object-fit:contain}
     .badge{border:1px solid var(--border);padding:4px 10px;border-radius:999px;color:#c9cdd3;font-size:.84rem;display:inline-block;margin-top:14px}
-
-    /* ===== Router containers ===== */
-    #route-login, #route-home, #route-builder{min-height:100%;}
-
-    /* ===== Home ===== */
-    .home-wrap{max-width:1100px;margin:0 auto;padding:28px 20px}
-    .home-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
-    .profile-min{display:flex;align-items:center;gap:10px}
+    /* router sections */
+    #route-login,#route-home,#route-builder{min-height:100%}
+    /* home */
+    .home{max-width:1100px;margin:0 auto;padding:28px 20px}
+    .home-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+    .mini{display:flex;align-items:center;gap:10px}
     .avatar{width:36px;height:36px;border-radius:50%;background:#2a2a2a;background-size:cover;background-position:center}
     .uname{font-weight:700}
-    .home-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-    .tile{
-      background:var(--panel2);border:1px solid var(--border);border-radius:14px;
-      padding:18px;min-height:130px;display:flex;flex-direction:column;gap:10px;
-    }
-    .tile h3{font-size:1rem}
-    .tile p{color:#a6abb0;font-size:.92rem}
-    .tile .act-row{margin-top:auto;display:flex;gap:10px}
-    .btn{
-      background:#1e1e1e;border:1px solid var(--border);color:#e9e9e9;
-      padding:10px 12px;border-radius:10px;cursor:pointer;font-weight:700;font-size:.92rem;
-    }
-    .btn:hover{background:#232323}
-    .btn-primary{background:#2b2b2b;border-color:#3a3a3a}
-    .btn-primary:hover{background:#323232}
-
-    /* ===== Builder layout ===== */
-    .workspace{position:relative;height:100%;display:grid;grid-template-columns:1fr 260px}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+    .tile{background:#161616;border:1px solid var(--border);border-radius:14px;padding:18px;min-height:130px;display:flex;flex-direction:column;gap:10px}
+    .tile h3{font-size:1rem}.tile p{color:#a6abb0;font-size:.92rem}.tile .row{margin-top:auto;display:flex;gap:10px}
+    .btn{background:#1e1e1e;border:1px solid var(--border);color:#e9e9e9;padding:10px 12px;border-radius:10px;cursor:pointer;font-weight:700;font-size:.92rem}
+    .btn:hover{background:#232323}.btn-primary{background:#2b2b2b;border-color:#3a3a3a}.btn-primary:hover{background:#323232}
+    /* builder */
+    .workspace{height:100%;display:grid;grid-template-columns:1fr 260px}
     .stage{position:relative;display:flex;align-items:center;justify-content:center;background:var(--bg)}
-    .placeholder{text-align:center;color:#6d7175}
-    .placeholder h2{font-size:1.28rem;font-weight:800;margin-bottom:6px}
-    .placeholder p{font-size:.92rem;color:#8a8f95}
+    .ph{text-align:center;color:#6d7175}.ph h2{font-size:1.28rem;margin-bottom:6px}.ph p{font-size:.92rem;color:#8a8f95}
     .preview{position:absolute;inset:0;border:0;display:none;background:#fff}
-    .right{background:var(--panel2);border-left:1px solid var(--border);display:flex;flex-direction:column;min-height:0}
+    .right{background:#161616;border-left:1px solid var(--border);display:flex;flex-direction:column;min-height:0}
     .profile{display:flex;align-items:center;gap:10px;padding:14px;border-bottom:1px solid var(--border)}
     .projects{flex:1;overflow:auto;padding:12px 10px 18px}
-    .empty-list{color:#7a7f85;font-size:.9rem;padding:14px 10px}
-    .proj{
-      padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:#151515;
-      display:flex;align-items:center;justify-content:space-between;margin:8px 4px;cursor:pointer
-    }
+    .empty{color:#7a7f85;font-size:.9rem;padding:14px 10px}
+    .proj{padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:#151515;display:flex;align-items:center;justify-content:space-between;margin:8px 4px;cursor:pointer}
     .proj:hover{background:#1b1b1b;border-color:#3a3a3a}
     .pill{border:1px solid #3a3a3a;border-radius:999px;padding:2px 8px;color:#aab0b6;font-size:.78rem}
-    .toolbar{display:flex;gap:8px;padding:10px 12px;border-bottom:1px solid var(--border)}
-
-    /* Dock (prompt) */
-    .dock{
-      position:fixed;left:50%;bottom:26px;transform:translateX(-50%);
-      width:min(780px,94vw);background:#131313;border:1px solid var(--border);
-      border-radius:999px;display:none;align-items:center;gap:8px;padding:6px 8px;box-shadow:0 18px 60px rgba(0,0,0,.45)
-    }
-    .input{flex:1;background:transparent;border:0;outline:0;color:var(--text);padding:12px 16px;font-size:1rem}
+    .tools{display:flex;gap:8px;padding:10px 12px;border-bottom:1px solid var(--border)}
+    /* prompt */
+    .dock{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);width:min(780px,94vw);background:#131313;border:1px solid var(--border);border-radius:999px;display:none;align-items:center;gap:8px;padding:6px 8px;box-shadow:0 18px 60px rgba(0,0,0,.45)}
+    .input{flex:1;background:transparent;border:0;outline:0;color:#f5f5f5;padding:12px 16px;font-size:1rem}
     .go{appearance:none;border:1px solid #3a3a3a;background:#242424;color:#fff;padding:10px 16px;border-radius:22px;font-weight:700;cursor:pointer}
     .go:hover{background:#2c2c2c;border-color:#4a4a4a}
     .thinking{display:none;align-items:center;gap:8px;margin-left:8px;color:#c7cad0;font-size:.9rem}
-    .dots{display:inline-flex;gap:2px}
-    .dot{width:6px;height:6px;border-radius:50%;background:#c7cad0;opacity:.35;animation:blink 1.2s infinite ease-in-out}
+    .dots{display:inline-flex;gap:2px}.dot{width:6px;height:6px;border-radius:50%;background:#c7cad0;opacity:.35;animation:blink 1.2s infinite ease-in-out}
     .dot:nth-child(2){animation-delay:.2s}.dot:nth-child(3){animation-delay:.4s}
     @keyframes blink{0%,80%,100%{opacity:.3;transform:translateY(0)}40%{opacity:1;transform:translateY(-2px)}}
-
-    /* Toasts */
-    .toast-wrap{position:fixed;right:18px;bottom:18px;display:flex;flex-direction:column;gap:10px;z-index:50}
-    .toast{
-      min-width:260px;max-width:min(420px,90vw);
-      background:#161616;border:1px solid var(--border);border-left-width:3px;border-radius:12px;
-      padding:12px 14px;display:flex;gap:10px;align-items:flex-start;box-shadow:0 20px 60px rgba(0,0,0,.5)
-    }
-    .toast.ok{border-left-color:var(--ok)} .toast.warn{border-left-color:var(--warn)} .toast.err{border-left-color:var(--err)}
-    .toast h4{margin:0 0 4px 0;font-size:.98rem} .toast p{margin:0;color:#c5c9cf;font-size:.92rem}
-    .toast small{color:#8e949a}
-
-    @media (max-width:980px){
-      .workspace{grid-template-columns:1fr}
-      .right{position:fixed;inset:auto 0 0 0;height:54vh;border-left:0;border-top:1px solid var(--border)}
-      .projects{padding-bottom:24vh}
-    }
+    /* toasts */
+    .toasts{position:fixed;right:18px;bottom:18px;display:flex;flex-direction:column;gap:10px;z-index:50}
+    .toast{min-width:260px;max-width:min(420px,90vw);background:#161616;border:1px solid var(--border);border-left-width:3px;border-radius:12px;padding:12px 14px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+    .toast.ok{border-left-color:var(--ok)}.toast.err{border-left-color:var(--err)}
+    .toast h4{margin:0 0 4px;font-size:.98rem}.toast p{margin:0;color:#c5c9cf;font-size:.92rem}
+    @media (max-width:980px){.workspace{grid-template-columns:1fr}.right{position:fixed;inset:auto 0 0 0;height:54vh;border-left:0;border-top:1px solid var(--border)}.projects{padding-bottom:24vh}}
   </style>
 </head>
 <body>
 
-<!-- ===== ROUTE: LOGIN ===== -->
+<!-- LOGIN -->
 <section id="route-login" class="center">
-  <div class="card" role="dialog" aria-labelledby="ttl" aria-describedby="tag">
-    <div class="brand" id="ttl">SimuWeb</div>
-    <div class="tagline" id="tag">Build AI-crafted websites — fast, simple, smart.</div>
+  <div class="card">
+    <div class="brand">SimuWeb</div>
+    <div class="tagline">Build AI-crafted websites — fast, simple, smart.</div>
     <button class="discord-btn" id="discordBtn" type="button">
       <img class="discord-logo" alt="Discord"
            src="https://static.vecteezy.com/system/resources/previews/018/930/500/non_2x/discord-logo-discord-icon-transparent-free-png.png"/>
@@ -136,11 +77,11 @@
   </div>
 </section>
 
-<!-- ===== ROUTE: HOME ===== -->
+<!-- HOME -->
 <section id="route-home" class="hidden">
-  <div class="home-wrap">
-    <div class="home-header">
-      <div class="profile-min">
+  <div class="home">
+    <div class="home-h">
+      <div class="mini">
         <div id="homeAvatar" class="avatar"></div>
         <div>
           <div id="homeName" class="uname">User</div>
@@ -149,44 +90,38 @@
       </div>
       <span class="badge">Early Access</span>
     </div>
-
-    <div class="home-grid">
+    <div class="grid">
       <div class="tile">
         <h3>Start a project</h3>
         <p>Describe what you want. SimuWeb crafts a working site with HTML, CSS, and JS.</p>
-        <div class="act-row">
+        <div class="row">
           <a class="btn btn-primary" id="startProject">Open builder</a>
         </div>
       </div>
       <div class="tile">
         <h3>For You</h3>
-        <p>Personalized templates and ideas (coming soon).</p>
-        <div class="act-row">
-          <button class="btn" disabled>Coming soon</button>
-        </div>
+        <p>Personalized templates (coming soon).</p>
+        <div class="row"><button class="btn" disabled>Coming soon</button></div>
       </div>
       <div class="tile">
         <h3>Newest</h3>
         <p>Fresh community projects (coming soon).</p>
-        <div class="act-row">
-          <button class="btn" disabled>Coming soon</button>
-        </div>
+        <div class="row"><button class="btn" disabled>Coming soon</button></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ===== ROUTE: BUILDER ===== -->
+<!-- BUILDER -->
 <section id="route-builder" class="hidden">
   <div class="workspace">
     <div class="stage">
-      <div id="placeholder" class="placeholder">
+      <div id="placeholder" class="ph">
         <h2>Nothing to see here yet</h2>
         <p>Your site will appear after you submit a prompt.</p>
       </div>
       <iframe id="frame" class="preview"></iframe>
     </div>
-
     <aside class="right">
       <div class="profile">
         <div id="avatar" class="avatar"></div>
@@ -195,18 +130,15 @@
           <div id="uid" style="color:#7f848a;font-size:.8rem"></div>
         </div>
       </div>
-      <div class="toolbar">
+      <div class="tools">
         <button id="newProject" class="btn" type="button">New Project</button>
       </div>
-      <div id="list" class="projects">
-        <div class="empty-list">No projects yet</div>
-      </div>
+      <div id="list" class="projects"><div class="empty">No projects yet</div></div>
     </aside>
   </div>
 
-  <!-- Prompt dock -->
   <div id="dock" class="dock">
-    <div id="thinking" class="thinking" aria-live="polite">
+    <div id="thinking" class="thinking">
       <span>Crafting your site</span>
       <span class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>
     </div>
@@ -215,236 +147,159 @@
   </div>
 </section>
 
-<!-- Toasts -->
-<div id="toasts" class="toast-wrap" aria-live="polite"></div>
+<!-- toasts -->
+<div id="toasts" class="toasts" aria-live="polite"></div>
 
 <script>
-/* ====================== CONFIG ====================== */
-const DISCORD_CLIENT_ID = "1362097275811135669"; // your Discord app ID
-// IMPORTANT: This value must be added EXACTLY in Discord → OAuth2 → Redirects.
-const REDIRECT_URI = window.location.origin + window.location.pathname;
-const MODEL = "qwen/qwen3-32b";
+/* ---------- public env via /api/env ---------- */
+let DISCORD_CLIENT_ID = null;
 
-/* ====================== STATE ======================= */
-let user = null;               // { id, username, avatar, userId }
-let projects = {};             // { [projectId]: [{version, code}] }
+/* ---------- state ---------- */
+let user = null; // { id, username, avatar, userId }
+let projects = {}; // { [projectId]: [{version, code}] }
 let currentProjectId = null;
+const MODEL = "qwen/qwen3-32b";
+const REDIRECT_URI = window.location.origin + window.location.pathname;
 
-/* ====================== HELPERS ===================== */
 const $ = id => document.getElementById(id);
-const routeLogin = $("route-login");
-const routeHome = $("route-home");
-const routeBuilder = $("route-builder");
+const login = $("route-login"), home = $("route-home"), builder = $("route-builder");
+const toastWrap = $("toasts");
 
 function show(el){el.classList.remove("hidden")}
 function hide(el){el.classList.add("hidden")}
 function toast(kind,title,msg){
-  const wrap = $("toasts");
-  const div = document.createElement("div");
-  div.className = `toast ${kind}`;
-  div.innerHTML = `<div><h4>${title}</h4><p>${msg || ""}</p><small>SimuWeb</small></div>`;
-  wrap.appendChild(div);
-  setTimeout(()=>{div.remove()}, 6000);
+  const t=document.createElement("div"); t.className=`toast ${kind}`;
+  t.innerHTML=`<h4>${title}</h4><p>${msg||""}</p>`;
+  toastWrap.appendChild(t); setTimeout(()=>t.remove(),6000);
 }
 function uid(){return "u_"+Math.random().toString(36).slice(2)+Date.now().toString(36)}
 function sanitize(s){return (s||"").replace(/[^\w\-.]/g,"_")}
-
-/* ====================== SESSION ===================== */
-function saveSession(u){ try{ localStorage.setItem("simuweb:user", JSON.stringify(u)); }catch{} }
-function loadSession(){ try{ const raw = localStorage.getItem("simuweb:user"); return raw?JSON.parse(raw):null; }catch{return null;} }
-
-/* ====================== ROUTER ====================== */
+function saveSession(u){ try{localStorage.setItem("simuweb:user",JSON.stringify(u));}catch{} }
+function loadSession(){ try{const r=localStorage.getItem("simuweb:user");return r?JSON.parse(r):null;}catch{return null;} }
 function go(path){ history.pushState({}, "", path); renderRoute(); }
+
+function hydrateUserUI(){
+  const url = (user.id&&user.avatar)?`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`:"https://cdn.discordapp.com/embed/avatars/0.png";
+  $("homeAvatar").style.backgroundImage=`url(${url})`; $("homeName").textContent=user.username||"User";
+  $("avatar").style.backgroundImage=`url(${url})`; $("uname").textContent=user.username||"User"; $("uid").textContent=user.userId||"";
+}
 function renderRoute(){
-  const path = window.location.pathname;
-  const isHome = path.endsWith("/home") || path === "/home";
-  const isBuilder = /\/@/.test(path) || path.endsWith("/builder");
-
-  hide(routeLogin); hide(routeHome); hide(routeBuilder);
-
-  if(!user){ show(routeLogin); return; }
-  if(isHome){ show(routeHome); return; }
-  if(isBuilder){ show(routeBuilder); $("dock").style.display="flex"; return; }
-
-  // default for logged-in users
+  const p = window.location.pathname;
+  const isHome = p.endsWith("/home")||p==="/home";
+  const isBuilder = /\/@/.test(p) || p.endsWith("/builder");
+  hide(login);hide(home);hide(builder);
+  if(!user){show(login);return;}
+  if(isHome){show(home);return;}
+  if(isBuilder){show(builder);$("dock").style.display="flex";return;}
   go("/home");
 }
 
-/* ====================== AUTH (Discord) ====================== */
-$("discordBtn").onclick = () => {
-  const url = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=identify`;
-  window.location.href = url;
-};
-
-window.addEventListener("load", async () => {
-  // Persisted session?
-  const existing = loadSession();
-  if(existing){
-    user = existing;
-    hydrateUserUI();
-    go("/home");
-    return;
+/* ---------- startup ---------- */
+(async function init(){
+  try{
+    const env = await fetch("/api/env").then(r=>r.json());
+    DISCORD_CLIENT_ID = env.discordClientId;
+  }catch{
+    // still allow UI; user can’t login if env route fails
   }
 
-  // Handle Discord redirect
-  if(window.location.hash.includes("access_token")){
-    try{
-      const params = new URLSearchParams(window.location.hash.substring(1));
-      const token = params.get("access_token");
-      const r = await fetch("https://discord.com/api/users/@me", {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if(!r.ok) throw new Error("Discord identify failed");
-      const d = await r.json();
-      user = {
-        id: d.id,
-        username: d.username,
-        avatar: d.avatar,
-        userId: uid() // SimuWeb's stable id
-      };
-      saveSession(user);
-      // Clean the hash to the exact redirect path we whitelisted
-      history.replaceState({}, document.title, REDIRECT_URI);
-      hydrateUserUI();
-      go("/home");
-      toast("ok","Signed in","Welcome to SimuWeb!");
-    }catch(e){
-      toast("err","Sign-in failed","Please try again. If this persists, contact support.");
-      console.error(e);
-      renderRoute();
-    }
+  // existing session?
+  const ses = loadSession();
+  if(ses){
+    user = ses; hydrateUserUI(); go("/home");
   }else{
     renderRoute();
   }
-});
 
-function hydrateUserUI(){
-  const avatarUrl = (user.id && user.avatar)
-      ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`
-      : "https://cdn.discordapp.com/embed/avatars/0.png";
-  $("homeAvatar").style.backgroundImage = `url(${avatarUrl})`;
-  $("homeName").textContent = user.username || "User";
-  $("avatar").style.backgroundImage = `url(${avatarUrl})`;
-  $("uname").textContent = user.username || "User";
-  $("uid").textContent = user.userId || "";
-}
+  // hook buttons
+  $("discordBtn").onclick = () => {
+    if(!DISCORD_CLIENT_ID){ toast("err","Missing config","Contact support: DISCORD_CLIENT_ID not available."); return; }
+    const url = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=identify`;
+    window.location.href = url;
+  };
 
-/* ====================== HOME ACTIONS ====================== */
-$("startProject").onclick = ()=>{
-  go("/builder");
-  show($("dock"));
-  createNewProject();
-  $("prompt").focus();
-};
+  $("startProject").onclick = ()=>{ go("/builder"); $("dock").style.display="flex"; createNewProject(); $("prompt").focus(); };
+  $("newProject").onclick = createNewProject;
 
-/* ====================== BUILDER ====================== */
-$("newProject").onclick = createNewProject;
+  $("prompt").addEventListener("keydown",(e)=>{ if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();$("go").click();} });
+  document.addEventListener("keydown",(e)=>{ if(e.key==="F2"){ e.preventDefault(); $("prompt").focus(); } });
 
-function createNewProject(){
-  currentProjectId = "proj" + Date.now();
-  if(!projects[currentProjectId]) projects[currentProjectId] = [];
-  const uname = sanitize(user?.username || "guest");
-  history.replaceState({}, "", `${window.location.origin}/@${uname}/${currentProjectId}`);
-  refreshList();
-}
-
-$("prompt").addEventListener("keydown", (e)=>{
-  if(e.key==="Enter" && !e.shiftKey){ e.preventDefault(); $("go").click(); }
-});
-document.addEventListener("keydown", (e)=>{
-  if(e.key==="F2"){ e.preventDefault(); $("prompt").focus(); }
-});
-
-$("go").onclick = async () => {
-  const text = $("prompt").value.trim();
-  if(!text) return;
-
-  if(!currentProjectId) createNewProject();
-
-  $("go").disabled = true; $("go").textContent = "Crafting…";
-  $("thinking").style.display = "flex";
-
-  try{
-    // Calls your protected server route that uses process.env.GROQ_API_KEY
-    const resp = await fetch("/api/generate", {
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({
-        prompt: text,
-        username: user?.username || "guest",
-        projectId: currentProjectId,
-        model: MODEL
-      })
-    });
-
-    if(!resp.ok){
-      const detail = await resp.text();
-      throw new Error(detail || "Generation failed");
+  // handle discord redirect
+  if(window.location.hash.includes("access_token")){
+    try{
+      const params=new URLSearchParams(window.location.hash.substring(1));
+      const token=params.get("access_token");
+      const r=await fetch("https://discord.com/api/users/@me",{headers:{Authorization:`Bearer ${token}`}});
+      if(!r.ok) throw new Error("Discord identify failed");
+      const d=await r.json();
+      user={ id:d.id, username:d.username, avatar:d.avatar, userId:uid() };
+      saveSession(user);
+      history.replaceState({},document.title,REDIRECT_URI);
+      hydrateUserUI(); go("/home"); toast("ok","Signed in","Welcome to SimuWeb!");
+    }catch(e){
+      toast("err","Sign-in failed","Please try again. If this persists, contact support."); console.error(e);
     }
-    const data = await resp.json(); // { projectId, version, code }
-    applyGeneration(data);
-    toast("ok","Site ready","Preview updated.");
+  }
+})();
 
+/* ---------- builder ---------- */
+function createNewProject(){
+  currentProjectId="proj"+Date.now();
+  if(!projects[currentProjectId]) projects[currentProjectId]=[];
+  const uname=sanitize(user?.username||"guest");
+  history.replaceState({}, "", `${window.location.origin}/@${uname}/${currentProjectId}`);
+  renderList();
+}
+
+$("go").onclick = async ()=>{
+  const text=$("prompt").value.trim(); if(!text) return;
+  if(!currentProjectId) createNewProject();
+  $("go").disabled=true; $("go").textContent="Crafting…"; $("thinking").style.display="flex";
+  try{
+    const res=await fetch("/api/generate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({prompt:text,username:user?.username||"guest",projectId:currentProjectId,model:MODEL})});
+    if(!res.ok){ const detail=await res.text(); throw new Error(detail||"Generation failed"); }
+    const data=await res.json(); // { projectId, version, code }
+    applyGen(data); toast("ok","Site ready","Preview updated.");
   }catch(err){
     console.warn(err);
     toast("err","We hit a snag","We couldn't generate your site. Please try again. If this continues, contact support.");
-    // Demo fallback so users can still see something
-    const version = (projects[currentProjectId]?.length || 0) + 1;
-    const demo = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${text}</title><style>
-      body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial;margin:0;display:grid;place-items:center;height:100vh}
-      main{max-width:800px;padding:32px;border:1px solid #ddd;border-radius:14px}
-      h1{margin:0 0 8px} p{margin:0;color:#444}
-    </style></head><body><main>
-      <h1>${text}</h1><p>Generated by SimuWeb (demo fallback)</p></main></body></html>`;
-    applyGeneration({ projectId: currentProjectId, version, code: demo });
+    // demo fallback
+    const v=(projects[currentProjectId]?.length||0)+1;
+    const code=`<!doctype html><html><head><meta charset="utf-8"><title>${text}</title><style>body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial;margin:0;display:grid;place-items:center;height:100vh}main{max-width:800px;padding:32px;border:1px solid #ddd;border-radius:14px}h1{margin:0 0 8px}p{margin:0;color:#444}</style></head><body><main><h1>${text}</h1><p>Generated by SimuWeb (demo fallback)</p></main></body></html>`;
+    applyGen({projectId:currentProjectId,version:v,code});
   }finally{
-    $("go").disabled = false; $("go").textContent = "Generate";
-    $("thinking").style.display = "none";
+    $("go").disabled=false; $("go").textContent="Generate"; $("thinking").style.display="none";
   }
 };
 
-function applyGeneration({projectId, version, code}){
-  if(!projects[projectId]) projects[projectId] = [];
-  projects[projectId].push({version, code});
-
-  const uname = sanitize(user?.username || "guest");
+function applyGen({projectId,version,code}){
+  if(!projects[projectId]) projects[projectId]=[];
+  projects[projectId].push({version,code});
+  const uname=sanitize(user?.username||"guest");
   history.pushState({}, "", `${window.location.origin}/@${uname}/${projectId}/${version}`);
-
   $("placeholder").classList.add("hidden");
-  const frame = $("frame"); frame.style.display = "block"; frame.srcdoc = code;
-
-  refreshList();
+  const f=$("frame"); f.style.display="block"; f.srcdoc=code;
+  renderList();
 }
 
-function refreshList(){
-  const root = $("list");
-  root.innerHTML = "";
-  const keys = Object.keys(projects);
-  if(keys.length===0){
-    const empty = document.createElement("div");
-    empty.className = "empty-list";
-    empty.textContent = "No projects yet";
-    root.appendChild(empty);
-    return;
-  }
+function renderList(){
+  const root=$("list"); root.innerHTML="";
+  const keys=Object.keys(projects);
+  if(keys.length===0){ const e=document.createElement("div"); e.className="empty"; e.textContent="No projects yet"; root.appendChild(e); return; }
   keys.forEach(pid=>{
-    const latest = projects[pid][projects[pid].length-1];
-    const el = document.createElement("div");
-    el.className = "proj";
-    el.innerHTML = `<span>${pid}</span><span class="pill">v${latest.version}</span>`;
-    el.onclick = ()=>{
-      const v = latest.version;
-      const uname = sanitize(user?.username || "guest");
-      history.pushState({}, "", `${window.location.origin}/@${uname}/${pid}/${v}`);
-      $("placeholder").classList.add("hidden");
-      const frame = $("frame"); frame.style.display = "block"; frame.srcdoc = latest.code;
-      currentProjectId = pid;
+    const latest=projects[pid][projects[pid].length-1];
+    const el=document.createElement("div"); el.className="proj";
+    el.innerHTML=`<span>${pid}</span><span class="pill">v${latest.version}</span>`;
+    el.onclick=()=>{
+      const uname=sanitize(user?.username||"guest");
+      history.pushState({}, "", `${window.location.origin}/@${uname}/${pid}/${latest.version}`);
+      $("placeholder").classList.add("hidden"); const f=$("frame"); f.style.display="block"; f.srcdoc=latest.code; currentProjectId=pid;
     };
     root.appendChild(el);
   });
 }
 
-/* ====================== HISTORY ====================== */
+/* back/forward */
 window.addEventListener("popstate", renderRoute);
 </script>
 </body>
