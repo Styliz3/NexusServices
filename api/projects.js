@@ -14,7 +14,7 @@ module.exports = async function handler(req, res) {
       return res.status(200).json(data || null);
     }
 
-    if (!kv) return res.status(200).json([]); // no persistence configured yet
+    if (!kv) return res.status(200).json([]); // works without persistence too
 
     const set = await kv.smembers(`projects:${userKey}`);
     const items = await Promise.all(
