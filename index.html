@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>SimuWeb — AI Website Builder (Early Access)</title>
+  <title>SimuWeb — AI Website Builder</title>
   <style>
     :root{
       --bg:#0c0c0c; --panel:#131313; --panel2:#161616;
       --border:#2a2a2a; --text:#f5f5f5; --muted:#9aa0a6;
-      --accent:#5865f2; /* Discord blue (the only color) */
+      --accent:#5865f2; /* Discord blue (only color) */
       --ok:#24b47e; --warn:#f5a623; --err:#ff5c5c;
     }
     *{margin:0;padding:0;box-sizing:border-box}
@@ -20,9 +20,9 @@
       display:flex; flex-direction:column;
     }
     a{color:inherit;text-decoration:none}
-
-    /* ======= Generic ======= */
     .hidden{display:none !important}
+
+    /* ===== Auth (center card) ===== */
     .center{flex:1;display:flex;align-items:center;justify-content:center;padding:24px}
     .card{
       width:min(380px,92vw);
@@ -30,7 +30,7 @@
       border-radius:16px; padding:28px; text-align:center;
       box-shadow:0 20px 60px rgba(0,0,0,.45);
     }
-    .brand{font-weight:800;font-size:1.6rem;letter-spacing:.2px;margin-bottom:6px}
+    .brand{font-weight:800;font-size:1.55rem;margin-bottom:6px;letter-spacing:.2px}
     .tagline{color:var(--muted);font-size:.96rem;margin-bottom:22px}
     .discord-btn{
       width:100%; display:flex; align-items:center; justify-content:center; gap:12px;
@@ -41,17 +41,17 @@
     .discord-btn:hover{filter:saturate(105%) brightness(1.03)}
     .discord-btn:active{transform:translateY(1px)}
     .discord-logo{width:22px;height:22px;object-fit:contain}
+    .badge{border:1px solid var(--border);padding:4px 10px;border-radius:999px;color:#c9cdd3;font-size:.84rem;display:inline-block;margin-top:14px}
 
-    /* ======= Router containers ======= */
+    /* ===== Router containers ===== */
     #route-login, #route-home, #route-builder{min-height:100%;}
 
-    /* ======= Home ======= */
+    /* ===== Home ===== */
     .home-wrap{max-width:1100px;margin:0 auto;padding:28px 20px}
     .home-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
     .profile-min{display:flex;align-items:center;gap:10px}
     .avatar{width:36px;height:36px;border-radius:50%;background:#2a2a2a;background-size:cover;background-position:center}
     .uname{font-weight:700}
-    .pill-badge{border:1px solid var(--border);padding:4px 10px;border-radius:999px;color:#c9cdd3;font-size:.84rem}
     .home-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
     .tile{
       background:var(--panel2);border:1px solid var(--border);border-radius:14px;
@@ -68,11 +68,8 @@
     .btn-primary{background:#2b2b2b;border-color:#3a3a3a}
     .btn-primary:hover{background:#323232}
 
-    /* ======= Builder layout ======= */
-    .workspace{
-      position:relative;height:100%;
-      display:grid;grid-template-columns:1fr 260px;
-    }
+    /* ===== Builder layout ===== */
+    .workspace{position:relative;height:100%;display:grid;grid-template-columns:1fr 260px}
     .stage{position:relative;display:flex;align-items:center;justify-content:center;background:var(--bg)}
     .placeholder{text-align:center;color:#6d7175}
     .placeholder h2{font-size:1.28rem;font-weight:800;margin-bottom:6px}
@@ -89,6 +86,8 @@
     .proj:hover{background:#1b1b1b;border-color:#3a3a3a}
     .pill{border:1px solid #3a3a3a;border-radius:999px;padding:2px 8px;color:#aab0b6;font-size:.78rem}
     .toolbar{display:flex;gap:8px;padding:10px 12px;border-bottom:1px solid var(--border)}
+
+    /* Dock (prompt) */
     .dock{
       position:fixed;left:50%;bottom:26px;transform:translateX(-50%);
       width:min(780px,94vw);background:#131313;border:1px solid var(--border);
@@ -103,7 +102,7 @@
     .dot:nth-child(2){animation-delay:.2s}.dot:nth-child(3){animation-delay:.4s}
     @keyframes blink{0%,80%,100%{opacity:.3;transform:translateY(0)}40%{opacity:1;transform:translateY(-2px)}}
 
-    /* ======= Toasts ======= */
+    /* Toasts */
     .toast-wrap{position:fixed;right:18px;bottom:18px;display:flex;flex-direction:column;gap:10px;z-index:50}
     .toast{
       min-width:260px;max-width:min(420px,90vw);
@@ -123,7 +122,7 @@
 </head>
 <body>
 
-<!-- ============ ROUTE: LOGIN ============ -->
+<!-- ===== ROUTE: LOGIN ===== -->
 <section id="route-login" class="center">
   <div class="card" role="dialog" aria-labelledby="ttl" aria-describedby="tag">
     <div class="brand" id="ttl">SimuWeb</div>
@@ -133,13 +132,11 @@
            src="https://static.vecteezy.com/system/resources/previews/018/930/500/non_2x/discord-logo-discord-icon-transparent-free-png.png"/>
       Sign in with Discord
     </button>
-    <div style="margin-top:14px;">
-      <span class="pill-badge">Early Access</span>
-    </div>
+    <span class="badge">Early Access</span>
   </div>
 </section>
 
-<!-- ============ ROUTE: HOME ============ -->
+<!-- ===== ROUTE: HOME ===== -->
 <section id="route-home" class="hidden">
   <div class="home-wrap">
     <div class="home-header">
@@ -150,7 +147,7 @@
           <div style="color:#8b9096;font-size:.85rem">Welcome back</div>
         </div>
       </div>
-      <div class="pill-badge">Early Access</div>
+      <span class="badge">Early Access</span>
     </div>
 
     <div class="home-grid">
@@ -179,7 +176,7 @@
   </div>
 </section>
 
-<!-- ============ ROUTE: BUILDER ============ -->
+<!-- ===== ROUTE: BUILDER ===== -->
 <section id="route-builder" class="hidden">
   <div class="workspace">
     <div class="stage">
@@ -223,8 +220,9 @@
 
 <script>
 /* ====================== CONFIG ====================== */
-const DISCORD_CLIENT_ID = "1362097275811135669"; // your real Discord app id
-const REDIRECT_URI = window.location.origin + window.location.pathname; // add this exact URL in Discord Redirects
+const DISCORD_CLIENT_ID = "1362097275811135669"; // your Discord app ID
+// IMPORTANT: This value must be added EXACTLY in Discord → OAuth2 → Redirects.
+const REDIRECT_URI = window.location.origin + window.location.pathname;
 const MODEL = "qwen/qwen3-32b";
 
 /* ====================== STATE ======================= */
@@ -237,6 +235,7 @@ const $ = id => document.getElementById(id);
 const routeLogin = $("route-login");
 const routeHome = $("route-home");
 const routeBuilder = $("route-builder");
+
 function show(el){el.classList.remove("hidden")}
 function hide(el){el.classList.add("hidden")}
 function toast(kind,title,msg){
@@ -251,32 +250,21 @@ function uid(){return "u_"+Math.random().toString(36).slice(2)+Date.now().toStri
 function sanitize(s){return (s||"").replace(/[^\w\-.]/g,"_")}
 
 /* ====================== SESSION ===================== */
-function saveSession(u){
-  try{ localStorage.setItem("simuweb:user", JSON.stringify(u)); }catch{}
-}
-function loadSession(){
-  try{
-    const raw = localStorage.getItem("simuweb:user");
-    if(!raw) return null;
-    return JSON.parse(raw);
-  }catch{ return null; }
-}
+function saveSession(u){ try{ localStorage.setItem("simuweb:user", JSON.stringify(u)); }catch{} }
+function loadSession(){ try{ const raw = localStorage.getItem("simuweb:user"); return raw?JSON.parse(raw):null; }catch{return null;} }
 
 /* ====================== ROUTER ====================== */
-function go(path){
-  history.pushState({}, "", path);
-  renderRoute();
-}
+function go(path){ history.pushState({}, "", path); renderRoute(); }
 function renderRoute(){
   const path = window.location.pathname;
-  const isHome = path.endsWith("/home");
+  const isHome = path.endsWith("/home") || path === "/home";
   const isBuilder = /\/@/.test(path) || path.endsWith("/builder");
 
   hide(routeLogin); hide(routeHome); hide(routeBuilder);
 
   if(!user){ show(routeLogin); return; }
   if(isHome){ show(routeHome); return; }
-  if(isBuilder){ show(routeBuilder); show($("dock")); return; }
+  if(isBuilder){ show(routeBuilder); $("dock").style.display="flex"; return; }
 
   // default for logged-in users
   go("/home");
@@ -289,11 +277,11 @@ $("discordBtn").onclick = () => {
 };
 
 window.addEventListener("load", async () => {
-  // Already logged in?
+  // Persisted session?
   const existing = loadSession();
   if(existing){
     user = existing;
-    hydrateUIFromUser();
+    hydrateUserUI();
     go("/home");
     return;
   }
@@ -312,24 +300,25 @@ window.addEventListener("load", async () => {
         id: d.id,
         username: d.username,
         avatar: d.avatar,
-        userId: uid() // our own stable id for the app
+        userId: uid() // SimuWeb's stable id
       };
       saveSession(user);
-      // Clean hash then go home
+      // Clean the hash to the exact redirect path we whitelisted
       history.replaceState({}, document.title, REDIRECT_URI);
-      hydrateUIFromUser();
+      hydrateUserUI();
       go("/home");
       toast("ok","Signed in","Welcome to SimuWeb!");
     }catch(e){
       toast("err","Sign-in failed","Please try again. If this persists, contact support.");
       console.error(e);
+      renderRoute();
     }
   }else{
     renderRoute();
   }
 });
 
-function hydrateUIFromUser(){
+function hydrateUserUI(){
   const avatarUrl = (user.id && user.avatar)
       ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`
       : "https://cdn.discordapp.com/embed/avatars/0.png";
@@ -342,11 +331,8 @@ function hydrateUIFromUser(){
 
 /* ====================== HOME ACTIONS ====================== */
 $("startProject").onclick = ()=>{
-  // go to builder page
   go("/builder");
-  // make sure prompt dock is visible in builder
   show($("dock"));
-  // create a new project scaffold immediately
   createNewProject();
   $("prompt").focus();
 };
@@ -375,12 +361,11 @@ $("go").onclick = async () => {
 
   if(!currentProjectId) createNewProject();
 
-  // status UI
   $("go").disabled = true; $("go").textContent = "Crafting…";
   $("thinking").style.display = "flex";
 
   try{
-    // Call your secure server route (protects GROQ_API_KEY)
+    // Calls your protected server route that uses process.env.GROQ_API_KEY
     const resp = await fetch("/api/generate", {
       method:"POST",
       headers:{"Content-Type":"application/json"},
@@ -393,18 +378,17 @@ $("go").onclick = async () => {
     });
 
     if(!resp.ok){
-      const msg = await resp.text();
-      throw new Error(msg || "Generation failed");
+      const detail = await resp.text();
+      throw new Error(detail || "Generation failed");
     }
-    const data = await resp.json(); // expects { projectId, version, code }
+    const data = await resp.json(); // { projectId, version, code }
     applyGeneration(data);
     toast("ok","Site ready","Preview updated.");
 
   }catch(err){
     console.warn(err);
-    toast("err","We hit a snag",
-      "We couldn't generate your site. Please try again. If this continues, contact support.");
-    // Fallback demo (so users can still test the flow)
+    toast("err","We hit a snag","We couldn't generate your site. Please try again. If this continues, contact support.");
+    // Demo fallback so users can still see something
     const version = (projects[currentProjectId]?.length || 0) + 1;
     const demo = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${text}</title><style>
       body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial;margin:0;display:grid;place-items:center;height:100vh}
